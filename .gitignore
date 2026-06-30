@@ -5,6 +5,7 @@
 
 .docker_volumes/
 minio_data/
+spark_dependencies/
 
 .env
 *.env
