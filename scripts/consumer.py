@@ -1,11 +1,15 @@
+from dotenv import load_dotenv
+import os
 from pyspark.sql import SparkSession
+
+load_dotenv()
 
 # Initialize Spark session
 spark = SparkSession.builder \
     .appName("DotTurinStreamingConsumer") \
     .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000") \
-    .config("spark.hadoop.fs.s3a.access.key", "rootuser") \
-    .config("spark.hadoop.fs.s3a.secret.key", "rootpassword123") \
+    .config("spark.hadoop.fs.s3a.access.key", os.environ.get("MINIO_ROOT_USER")) \
+    .config("spark.hadoop.fs.s3a.secret.key", os.environ.get("MINIO_ROOT_PASSWORD")) \
     .config("spark.hadoop.fs.s3a.path.style.access", "true") \
     .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
     .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider") \

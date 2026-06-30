@@ -3,6 +3,7 @@
 *.tfstate
 *.tfstate.backup
 .terraform.lock.hcl
+secret.auto.tfvars
 
 # Spark cache
 spark_dependencies/
