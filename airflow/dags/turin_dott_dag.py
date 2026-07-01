@@ -18,10 +18,7 @@ default_args = {
   catchup=False
 )
 def turin_dott_api_ingestion_dag():
-  @task.virtualenv(
-    task_id='run_kafka_producer',
-    requirements=['confluent-kafka', 'requests']
-  )
+  @task(task_id='run_kafka_producer')
   def trigger_producer():
     import subprocess
     import sys

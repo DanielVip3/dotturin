@@ -8,6 +8,7 @@ load_dotenv()
 spark = SparkSession.builder \
     .appName("DotTurinStreamingConsumer") \
     .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000") \
+    .config("spark.hadoop.fs.s3a.connection.ssl.enabled", "false") \
     .config("spark.hadoop.fs.s3a.access.key", os.environ.get("MINIO_ROOT_USER")) \
     .config("spark.hadoop.fs.s3a.secret.key", os.environ.get("MINIO_ROOT_PASSWORD")) \
     .config("spark.hadoop.fs.s3a.path.style.access", "true") \
@@ -23,6 +24,7 @@ kafka_df = spark.readStream \
     .option("kafka.bootstrap.servers", "kafka:29092") \
     .option("subscribe", "dotturin-bike-status") \
     .option("startingOffsets", "latest") \
+    .option("failOnDataLoss", "false") \
     .load()
 
 readable_df = kafka_df.selectExpr("CAST(value AS STRING) as json_payload", "timestamp")
