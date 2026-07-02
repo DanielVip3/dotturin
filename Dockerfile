@@ -8,11 +8,23 @@ RUN apk add --no-cache curl
 # Create /opt/spark/jars directory
 RUN mkdir -p /opt/spark/jars
 
-# Install required JAR connectors in /opt/spark/jars
+# Install required JAR connectors in /opt/spark/jars. From: https://mvnrepository.com/artifact/org.apache.spark/spark-sql-kafka-0-10_2.13/4.0.3/dependencies
+# 1. Spark SQL Kafka 4.0.3
 RUN curl -L -o /opt/spark/jars/spark-sql-kafka-0-10_2.13-4.0.3.jar \
   https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.13/4.0.3/spark-sql-kafka-0-10_2.13-4.0.3.jar && \
+  # 2. Spark Token Provider Kafka 4.0.3
+  curl -L -o /opt/spark/jars/spark-token-provider-kafka-0-10_2.13-4.0.3.jar \
+  https://repo1.maven.org/maven2/org/apache/spark/spark-token-provider-kafka-0-10_2.13/4.0.3/spark-token-provider-kafka-0-10_2.13-4.0.3.jar && \
+  # 3. Kafka Clients 4.0.2
+  curl -L -o /opt/spark/jars/kafka-clients-3.9.1.jar \
+  https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.9.1/kafka-clients-3.9.1.jar && \
+  # 4. Commons Pool 2.12.0
+  curl -L -o /opt/spark/jars/commons-pool2-2.12.0.jar \
+  https://repo1.maven.org/maven2/org/apache/commons/commons-pool2/2.12.0/commons-pool2-2.12.0.jar && \
+  # 5. Hadoop AWS 3.4.0
   curl -L -o /opt/spark/jars/hadoop-aws-3.4.0.jar \
   https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.4.0/hadoop-aws-3.4.0.jar && \
+  # 6. AWS SDK Bundle 2.25.60
   curl -L -o /opt/spark/jars/aws-sdk-bundle-2.25.60.jar \
   https://repo1.maven.org/maven2/software/amazon/awssdk/bundle/2.25.60/bundle-2.25.60.jar
 

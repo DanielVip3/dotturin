@@ -203,6 +203,7 @@ services:
     depends_on:
       - spark-master
       - spark-worker
+      - kafka
       - kafka-init-topics
       - minio
     restart: "no"
