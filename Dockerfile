@@ -26,7 +26,13 @@ RUN curl -L -o /opt/spark/jars/spark-sql-kafka-0-10_2.13-4.0.3.jar \
   https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.4.0/hadoop-aws-3.4.0.jar && \
   # 6. AWS SDK Bundle 2.25.60
   curl -L -o /opt/spark/jars/aws-sdk-bundle-2.25.60.jar \
-  https://repo1.maven.org/maven2/software/amazon/awssdk/bundle/2.25.60/bundle-2.25.60.jar
+  https://repo1.maven.org/maven2/software/amazon/awssdk/bundle/2.25.60/bundle-2.25.60.jar && \
+  # 7. Delta Spark 4.0.1
+  curl -L -o /opt/spark/jars/delta-spark_2.13-4.0.1.jar \
+  https://repo1.maven.org/maven2/io/delta/delta-spark_2.13/4.0.1/delta-spark_2.13-4.0.1.jar && \
+  # 8. Delta Storage 4.0.1
+  curl -L -o /opt/spark/jars/delta-storage-4.0.1.jar \
+  https://repo1.maven.org/maven2/io/delta/delta-storage/4.0.1/delta-storage-4.0.1.jar
 
 
 

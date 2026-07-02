@@ -8,6 +8,8 @@ load_dotenv()
 spark = SparkSession.builder \
   .appName("DotTurinStreamingConsumer") \
   .master("spark://spark-master:7077") \
+  .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+  .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
   .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000") \
   .config("spark.hadoop.fs.s3a.connection.ssl.enabled", "false") \
   .config("spark.hadoop.fs.s3a.access.key", os.environ.get("MINIO_ROOT_USER")) \
@@ -32,9 +34,9 @@ readable_df = kafka_df.selectExpr("CAST(value AS STRING) as json_payload", "time
 
 print("[*] Setup complete. Waiting for data...")
 
-# Write stream in Parquet format in bucket 'dotturin-raw'
+# Write stream in Delta Lake format in bucket 'dotturin-raw'
 query = readable_df.writeStream \
-  .format("parquet") \
+  .format("delta") \
   .option("path", "s3a://dotturin-raw/bikes/") \
   .option("checkpointLocation", "s3a://dotturin-raw/checkpoints/") \
   .outputMode("append") \

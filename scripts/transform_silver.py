@@ -9,6 +9,8 @@ load_dotenv()
 # Initialize Spark session
 spark = SparkSession.builder \
   .appName("DotTurinTransformBronzeToSilver") \
+  .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+  .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
   .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000") \
   .config("spark.hadoop.fs.s3a.connection.ssl.enabled", "false") \
   .config("spark.hadoop.fs.s3a.access.key", os.environ.get("MINIO_ROOT_USER")) \
@@ -23,14 +25,6 @@ spark = SparkSession.builder \
 spark.sparkContext.setLogLevel("WARN")
 
 print("[*] Reading raw data from bucket...")
-
-bronze_df = spark.read.parquet("s3a://dotturin-raw/bikes/")
-
-# Raw data schema (for readStream)
-bronze_schema = StructType([
-    StructField("timestamp", TimestampType(), True),
-    StructField("json_payload", StringType(), True)
-])
 
 # GBFS API schema (including Dott's custom fields)
 bike_schema = StructType([
@@ -62,8 +56,8 @@ gbfs_schema = StructType([
 print("[*] Parsing JSON and transforming...")
 
 bronze_stream_df = spark.readStream \
-  .schema(bronze_schema) \
-  .parquet("s3a://dotturin-raw/bikes/")
+  .format("delta") \
+  .load("s3a://dotturin-raw/bikes/")
 
 parsed_df = bronze_stream_df.withColumn("parsed_json", from_json(col("json_payload"), gbfs_schema))
 
@@ -91,7 +85,7 @@ silver_deduplicated_df = silver_df \
   .dropDuplicates(["last_updated"])
 
 # Extraction of last updated year, month and day columns to partition later
-silver_time_df = silver_df \
+silver_time_df = silver_deduplicated_df \
   .withColumn("year", year(col("last_updated"))) \
   .withColumn("month", month(col("last_updated"))) \
   .withColumn("day", day(col("last_updated")))
@@ -102,7 +96,7 @@ print("[*] Writing transformed data in bucket...")
 # trigger(availableNow=True) reads all unread data from the last trigger.
 query = silver_time_df.writeStream \
   .outputMode("append") \
-  .format("parquet") \
+  .format("delta") \
   .partitionBy("year", "month", "day") \
   .option("checkpointLocation", "s3a://dotturin-processed/checkpoints/silver_bikes/") \
   .trigger(availableNow=True) \
