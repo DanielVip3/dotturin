@@ -1,28 +1,9 @@
-from dotenv import load_dotenv
-import os
-from pyspark.sql import SparkSession
+from common import get_spark_session
 from pyspark.sql.functions import col, from_json, explode, from_unixtime, to_timestamp, year, month, day
-from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType, LongType, TimestampType, BooleanType, ArrayType
-
-load_dotenv()
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType, LongType, BooleanType, ArrayType
 
 # Initialize Spark session
-spark = SparkSession.builder \
-  .appName("DotTurinTransformBronzeToSilver") \
-  .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-  .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-  .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000") \
-  .config("spark.hadoop.fs.s3a.connection.ssl.enabled", "false") \
-  .config("spark.hadoop.fs.s3a.access.key", os.environ.get("MINIO_ROOT_USER")) \
-  .config("spark.hadoop.fs.s3a.secret.key", os.environ.get("MINIO_ROOT_PASSWORD")) \
-  .config("spark.hadoop.fs.s3a.path.style.access", "true") \
-  .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
-  .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider") \
-  .config("spark.hadoop.parquet.hadoop.vectored.io.enabled", "false") \
-  .config("spark.sql.files.ignoreMissingFiles", "true") \
-  .getOrCreate()
-
-spark.sparkContext.setLogLevel("WARN")
+spark = get_spark_session("DotTurinTransformBronzeToSilver")
 
 print("[*] Reading raw data from bucket...")
 
