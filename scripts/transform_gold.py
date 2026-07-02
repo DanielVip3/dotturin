@@ -1,5 +1,5 @@
 from common import get_spark_session
-from pyspark.sql.functions import col, hour, count, sum, when
+from pyspark.sql.functions import col, hour, count, sum, avg, when
 
 # Initialize Spark session
 spark = get_spark_session("DotTurinTransformSilverToGold")
@@ -16,14 +16,13 @@ silver_with_hour_df = silver_df \
 
 print("[*] Aggregating fleet by date and hour...")
 
-# Group by date and hour, computing the amount of bikes (total, split in reserved, disabled and available)
+# Group by date and hour, computing the amount of bikes (total and available) and average fuel
 gold_hourly_fleet_df = silver_with_hour_df \
   .groupBy("year", "month", "day", "hour") \
   .agg(
     count("bike_id").alias("total_bikes"),
-    sum(when(col("is_reserved") == True, 1).otherwise(0)).alias("reserved_bikes"),
-    sum(when(col("is_disabled") == True, 1).otherwise(0)).alias("disabled_bikes"),
-    sum(when((col("is_reserved") == False) & (col("is_disabled") == False), 1).otherwise(0)).alias("available_bikes")
+    sum(when((col("is_reserved") == False) & (col("is_disabled") == False), 1).otherwise(0)).alias("available_bikes"),
+    avg("current_fuel_percent").alias("average_fuel_percent")
   )
 
 print("[*] Writing data...")
@@ -34,6 +33,7 @@ gold_hourly_fleet_df.write \
   .format("delta") \
   .mode("overwrite") \
   .partitionBy("year", "month") \
+  .option("overwriteSchema", "true") \
   .save("s3a://dotturin-processed/hourly_fleet_status/")
 
 print("[+] Transformation completed successfully.")
