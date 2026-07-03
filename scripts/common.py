@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType, LongType, BooleanType, ArrayType
 
 load_dotenv()
 
@@ -32,3 +33,31 @@ def get_spark_session(app_name: str, master: str|None = None) -> SparkSession:
       
   spark.sparkContext.setLogLevel("WARN")
   return spark
+
+
+# GBFS API schema (including Dott's custom fields)
+bike_schema = StructType([
+  StructField("bike_id", StringType(), True),
+  StructField("last_reported", LongType(), True),
+  StructField("current_range_meters", IntegerType(), True),
+  StructField("current_fuel_percent", DoubleType(), True),
+  StructField("lat", DoubleType(), True),
+  StructField("lon", DoubleType(), True),
+  StructField("is_reserved", BooleanType(), True),
+  StructField("is_disabled", BooleanType(), True),
+  StructField("vehicle_type_id", StringType(), True),
+  StructField("pricing_plan_id", StringType(), True),
+  StructField("rental_uris", StructType([
+    StructField("android", StringType(), True),
+    StructField("ios", StringType(), True)
+  ]), True)
+])
+
+gbfs_schema = StructType([
+  StructField("last_updated", LongType(), True),
+  StructField("ttl", IntegerType(), True),
+  StructField("version", StringType(), True),
+  StructField("data", StructType([
+    StructField("bikes", ArrayType(bike_schema), True)
+  ]), True)
+])
