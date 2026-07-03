@@ -14,7 +14,7 @@ kafka_df = spark.readStream \
   .load()
 
 # Parse JSON and explode the bike array as rows into the main table
-exploded_df = kafka_df.selectExpr("CAST(value AS STRING) as json_payload", "timestamp as kafka_ts") \
+exploded_df = kafka_df.selectExpr("CAST(value AS STRING) as json_payload", "timestamp") \
   .withColumn("parsed_json", from_json(col("json_payload"), gbfs_schema)) \
   .withColumn("bike", explode(col("parsed_json.data.bikes")))
 
