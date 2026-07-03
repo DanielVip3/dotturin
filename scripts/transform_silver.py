@@ -6,6 +6,8 @@ from pyspark.sql.types import (
 from pyspark.sql.streaming.state import GroupState, GroupStateTimeout
 import pandas as pd
 
+# TODO: REWRITE ENTIRELY
+
 NOISE_THRESHOLD_METERS = 300.0    # under 300m distance, the bike is considered still (GPS can jitter)
 NOISE_THRESHOLD_DURATION = 2      # under 2 minutes, the bike is considered still
 NOISE_THRESHOLD_SPEED_KM_H = 4    # under 4 km/h, the bike is considered still

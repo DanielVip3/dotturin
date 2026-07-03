@@ -1,9 +1,11 @@
 import os
 from dotenv import load_dotenv
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType, LongType, BooleanType, ArrayType
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, LongType, TimestampType, ArrayType
 
 load_dotenv()
+
+TOPIC_NAME = os.environ.get("TOPIC_NAME")
 
 def get_spark_session(app_name: str, master: str|None = None) -> SparkSession:
   """
@@ -33,29 +35,19 @@ def get_spark_session(app_name: str, master: str|None = None) -> SparkSession:
   return spark
 
 
-# GBFS API schema (including Dott's custom fields)
-bike_schema = StructType([
-  StructField("bike_id", StringType(), True),
-  StructField("last_reported", LongType(), True),
-  StructField("current_range_meters", IntegerType(), True),
-  StructField("current_fuel_percent", DoubleType(), True),
-  StructField("lat", DoubleType(), True),
-  StructField("lon", DoubleType(), True),
-  StructField("is_reserved", BooleanType(), True),
-  StructField("is_disabled", BooleanType(), True),
-  StructField("vehicle_type_id", StringType(), True),
-  StructField("pricing_plan_id", StringType(), True),
-  StructField("rental_uris", StructType([
-    StructField("android", StringType(), True),
-    StructField("ios", StringType(), True)
-  ]), True)
+# Twitch API schema
+stream_schema = StructType([
+  StructField("id", StringType()),
+  StructField("user_name", StringType()),
+  StructField("game_name", StringType()),
+  StructField("title", StringType()),
+  StructField("tags", ArrayType(StringType())),
+  StructField("viewer_count", IntegerType()),
+  StructField("started_at", TimestampType()),
+  StructField("language", StringType()),
+  StructField("thumbnail_url", StringType())
 ])
 
-gbfs_schema = StructType([
-  StructField("last_updated", LongType(), True),
-  StructField("ttl", IntegerType(), True),
-  StructField("version", StringType(), True),
-  StructField("data", StructType([
-    StructField("bikes", ArrayType(bike_schema), True)
-  ]), True)
+twitch_api_schema = StructType([
+  StructField("data", ArrayType(stream_schema))
 ])

@@ -2,14 +2,14 @@ from common import *
 from airflow.sdk import dag, task
 
 @dag(
-  dag_id='turin_dott_api_ingestion',
+  dag_id='twitch_api_ingestion',
   default_args=default_args,
-  description='3 minutes ingestion flow for Turin Dott API',
-  schedule='*/3 * * * *',
+  description='1 minutes ingestion flow for Twitch API',
+  schedule='*/1 * * * *',
   start_date=start_date,
   catchup=False
 )
-def turin_dott_api_ingestion_dag():
+def twitch_api_ingestion_dag():
   @task(task_id='run_kafka_producer')
   def trigger_producer():
     import subprocess
@@ -20,4 +20,4 @@ def turin_dott_api_ingestion_dag():
   # Run the producer Python script
   trigger_producer()
 
-turin_dott_api_ingestion_dag()
+twitch_api_ingestion_dag()

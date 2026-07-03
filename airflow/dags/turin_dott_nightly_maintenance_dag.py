@@ -2,6 +2,8 @@ from common import *
 from airflow.sdk import dag
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 
+# TODO: REWRITE ENTIRELY
+
 @dag(
   dag_id='turin_dott_nightly_maintenance',
   default_args=default_args,
