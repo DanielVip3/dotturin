@@ -22,9 +22,7 @@ def get_spark_session(app_name: str, master: str|None = None) -> SparkSession:
     .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
     .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider") \
     .config("spark.hadoop.parquet.hadoop.vectored.io.enabled", "false") \
-    .config("spark.sql.files.ignoreMissingFiles", "true") \
-    .config("spark.databricks.delta.properties.defaults.autoOptimize.optimizeWrite", "true") \
-    .config("spark.databricks.delta.properties.defaults.autoOptimize.autoCompact", "true")
+    .config("spark.sql.files.ignoreMissingFiles", "true")
   
   if master is not None:
     spark = spark.master(master)

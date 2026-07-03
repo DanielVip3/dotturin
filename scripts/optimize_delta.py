@@ -29,9 +29,14 @@ def main():
     spark.sql(f"OPTIMIZE delta.`s3a://dotturin-raw/bikes/` WHERE year = {year} AND month = {month} AND day = {day}")
     print(f"[+] Bronze optimized successfully for Year={year} Month={month} Day={day}.")
 
-  elif layer == "silver":
-    # TO REWRITE
-    pass
+  elif layer == "silver":    
+    print(f"[*] Optimizing silver layer...")
+
+    # 512 MB = 536.870.912 bytes
+    spark.sql("ALTER TABLE delta.`s3a://dotturin-processed/bikes_status/` SET TBLPROPERTIES ('delta.targetFileSize' = '536870912')")
+    
+    spark.sql(f"OPTIMIZE delta.`s3a://dotturin-processed/trips/`")
+    print(f"[+] Silver optimized successfully.")
 
   spark.stop()
 

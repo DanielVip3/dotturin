@@ -15,7 +15,7 @@ RUN curl -L -o /opt/spark/jars/spark-sql-kafka-0-10_2.13-4.0.3.jar \
   # 2. Spark Token Provider Kafka 4.0.3
   curl -L -o /opt/spark/jars/spark-token-provider-kafka-0-10_2.13-4.0.3.jar \
   https://repo1.maven.org/maven2/org/apache/spark/spark-token-provider-kafka-0-10_2.13/4.0.3/spark-token-provider-kafka-0-10_2.13-4.0.3.jar && \
-  # 3. Kafka Clients 4.0.2
+  # 3. Kafka Clients 3.9.1
   curl -L -o /opt/spark/jars/kafka-clients-3.9.1.jar \
   https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.9.1/kafka-clients-3.9.1.jar && \
   # 4. Commons Pool 2.12.0

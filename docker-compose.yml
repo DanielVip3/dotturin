@@ -186,28 +186,29 @@ services:
       - "8082:8081"
     networks:
       - pipeline_net
-
-  # Init container to run consumer (bronze) in Spark Streaming
+  
+  # Init container to run bronze and silver jobs in Spark Streaming
   spark-stream-init:
     build:
       context: .
       dockerfile: Dockerfile
       target: spark
-    volumes:
-      - .:/app
-    working_dir: /app
-    command: >
-      /opt/spark/bin/spark-submit 
-      --master spark://spark-master:7077 
-      --conf spark.cores.max=${SPARK_APP_CORES} 
-      /app/scripts/consumer_bronze.py
     depends_on:
       - spark-master
       - spark-worker
       - kafka
       - kafka-init-topics
       - minio
-    restart: "no"
+    volumes:
+      - ./scripts:/app/jobs
+      - ./spark_submit_jobs.sh:/app/spark_submit_jobs.sh
+    environment:
+      SPARK_APP_CORES: ${SPARK_APP_CORES}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    working_dir: /app
+    command: bash spark_submit_jobs.sh
+    restart: unless-stopped
     networks:
       - pipeline_net
 
