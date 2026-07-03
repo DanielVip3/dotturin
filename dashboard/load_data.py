@@ -16,29 +16,13 @@ STORAGE_OPTIONS = {
 @st.cache_data(ttl=600)
 def load_data():
   try:
-    # Read Delta Lake gold data from bucket
     df = pl.read_delta(
-      "s3://dotturin-processed/hourly_fleet_status/",
+      "s3://dotturin-processed/trips/",
       storage_options=STORAGE_OPTIONS
-    )
-    
-    # Create timestamp and sort by it
-    df = df.with_columns(
-      pl.datetime(
-        pl.col("year").cast(pl.Int32), 
-        pl.col("month").cast(pl.Int32), 
-        pl.col("day").cast(pl.Int32), 
-        pl.col("hour").cast(pl.Int32)
-      ).alias("timestamp")
-    ).sort("timestamp")
-    
-    # Multiply the fuel percentage (in [0, 1]) by 100
-    df = df.with_columns(
-      average_fuel_percent = pl.col("average_fuel_percent") * 100
     )
 
     return df
 
   except Exception as e:
-    st.error(f"Error in data loading: {e}")
+    st.error(f"Error loading data: {e}")
     return pl.DataFrame()
