@@ -5,15 +5,15 @@ from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOpe
 # TODO: REWRITE ENTIRELY
 
 @dag(
-  dag_id='turin_dott_transformation',
+  dag_id='gold_transformation',
   default_args=default_args,
-  description='Batch transformation (silver to gold) every 30 minutes',
+  description='Batch transformation from silver to gold every 30 minutes',
   schedule='*/30 * * * *',
   start_date=start_date,
   catchup=False
 )
-def turin_dott_transformation_dag():
-  # Temporarily disabled as gold is not up-to-date.
+def gold_transformation_dag():
+  # Temporarily disabled as there is no gold.
   #run_gold = SparkSubmitOperator(
   #  task_id='run_gold',
   #  application='/opt/airflow/scripts/transform_gold.py',
@@ -25,4 +25,4 @@ def turin_dott_transformation_dag():
   #)
   pass
 
-turin_dott_transformation_dag()
+gold_transformation_dag()
