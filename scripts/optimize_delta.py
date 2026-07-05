@@ -4,8 +4,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# TODO: REWRITE ENTIRELY
-
 def main():
   if len(sys.argv) < 2:
     print("Usage: optimize_delta.py [bronze|silver] [year] [month] [day]")
@@ -14,7 +12,7 @@ def main():
   layer = sys.argv[1]
 
   # Initialize Spark session
-  spark = get_spark_session(f"DotTurinOptimize-{layer}")
+  spark = get_spark_session(f"DeltaLakeOptimize-{layer}")
 
   if layer == "bronze":
     if len(sys.argv) != 5:
