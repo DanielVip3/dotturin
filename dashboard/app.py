@@ -1,59 +1,71 @@
 import streamlit as st
-from load_data import load_data
-import pydeck as pdk
 import polars as pl
+import components
+from helpers import latest_snapshot, top_games, top_streamers, top_tags_by_frequency, top_tags_by_viewers, format_datetime
+from load_data import load_streams, load_tags, load_transitions
+from datetime import datetime, timedelta
 
-st.set_page_config(page_title="DotTurin Dashboard", layout="wide")
+st.set_page_config(page_title="Twitch Dashboard", layout="wide")
 
-st.title("DotTurin - Trips")
+st.title("Twitch streams dashboard")
 
-with st.spinner("Loading trips..."):
-  df = load_data()
+with st.spinner("Loading streams..."):
+  streams = load_streams()
+  tags = load_tags()
+  transitions = load_transitions()
 
-if df.is_empty():
+if streams.is_empty():
   st.warning("No data available.")
   st.stop()
 
-rows = df.to_dicts()
+all_games = sorted(streams["game_name"].drop_nulls().unique().to_list())
 
-st.success(f"Loaded {len(rows)} trips")
 
-st.subheader("Trips preview")
-st.dataframe(df)
+# ---- Sidebar filters ----
 
-# Compute paths from trips
-paths = []
-for r in df.to_dicts():
-  # Blue for scooters, green for bicycles
-  color = [0, 120, 255, 180] if "scooter" in r["vehicle_type_id"] else [0, 200, 100, 180]
-
-  paths.append({
-    "trip_id": r["bike_id"],
-    "path": [
-      [r["start_lon"], r["start_lat"]],
-      [r["end_lon"], r["end_lat"]],
-    ],
-    "timestamp_start": r["start_ts"],
-    "timestamp_end": r["end_ts"],
-    "color": color
-  })
-
-st.subheader("Trips map")
-layer = pdk.Layer(
-  "PathLayer",
-  data=paths,
-  get_path="path",
-  get_width=5,
-  get_color="color",
-  width_min_pixels=2,
+max_time = streams["ingestion_ts"].max()
+min_time = streams["ingestion_ts"].min()
+ 
+selected_date = st.sidebar.date_input(
+  "Select date",
+  value=max_time.date(),
+  min_value=min_time.date(),
+  max_value=max_time.date()
+)
+ 
+selected_time = st.sidebar.time_input(
+  "Select time",
+  value=max_time.time(),
+  step=timedelta(minutes=1)
 )
 
-lats = [p["path"][0][1] for p in paths] + [p["path"][1][1] for p in paths]
-lons = [p["path"][0][0] for p in paths] + [p["path"][1][0] for p in paths]
-view_state = pdk.ViewState(
-  latitude=sum(lats) / len(lats),
-  longitude=sum(lons) / len(lons),
-  zoom=12,
-)
+selected_datetime = datetime.combine(selected_date, selected_time)
 
-st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view_state))
+st.sidebar.caption(f"Viewing: {format_datetime(selected_datetime)}")
+
+selected_games = st.sidebar.multiselect("Filter by game", all_games)
+
+top_n = st.sidebar.slider("Top N", 1, 20, 10)
+
+if selected_games:
+  # Only applied to the streams table, tags/transitions stay unfiltered [TODO: revise]
+  streams = streams.filter(pl.col("game_name").is_in(selected_games))
+
+latest = latest_snapshot(streams, selected_datetime)
+
+
+# ---- Components ---
+
+components.kpis(streams, latest)
+
+components.top_games_streamers(top_games(latest, top_n), top_streamers(streams, latest, top_n))
+
+components.viewer_trend(streams, top_streamers(streams, latest, top_n))
+
+components.language_hour(latest)
+
+components.tags(top_tags_by_frequency(tags, top_n), top_tags_by_viewers(tags, streams, top_n))
+
+components.events_stats(transitions, top_n)
+
+components.events_list(transitions, top_n, format_datetime)

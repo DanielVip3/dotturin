@@ -13,16 +13,24 @@ STORAGE_OPTIONS = {
   "AWS_ALLOW_HTTP": "true"
 }
 
-@st.cache_data(ttl=600)
-def load_data():
+def _read_delta(path: str) -> pl.DataFrame:
   try:
-    df = pl.read_delta(
-      "s3://dotturin-processed/trips/",
-      storage_options=STORAGE_OPTIONS
-    )
-
-    return df
-
+    return pl.read_delta(path, storage_options=STORAGE_OPTIONS)
   except Exception as e:
-    st.error(f"Error loading data: {e}")
+    st.error(f"Error loading {path}: {e}")
     return pl.DataFrame()
+
+
+@st.cache_data(ttl=60)
+def load_streams() -> pl.DataFrame:
+  return _read_delta("s3://twitch-silver/streams_enriched/")
+
+
+@st.cache_data(ttl=60)
+def load_tags() -> pl.DataFrame:
+  return _read_delta("s3://twitch-silver/stream_tags/")
+
+
+@st.cache_data(ttl=60)
+def load_transitions() -> pl.DataFrame:
+  return _read_delta("s3://twitch-silver/stream_transitions/")
