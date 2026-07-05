@@ -18,13 +18,13 @@ enriched_df = bronze_df \
   .withColumn("started_hour", hour(col("started_at"))) \
   .withColumn("thumbnail_url_1080p", regexp_replace(col("thumbnail_url"), "\\{width\\}x\\{height\\}", "1920x1080")) \
   .withColumn("stream_time_seconds", unix_timestamp(col("ingestion_ts")) - unix_timestamp(col("started_at"))) \
-  .dropDuplicates(["stream_id", "ingestion_ts"]) # removing duplicate streams with ingestion at same time
 
 # Write to silver layer Delta Lake
 query = enriched_df.writeStream \
   .format("delta") \
   .outputMode("append") \
   .option("checkpointLocation", "s3a://twitch-silver/checkpoints/streams_enriched/") \
+  .trigger(processingTime="60 seconds") \
   .start("s3a://twitch-silver/streams_enriched/")
 
 query.awaitTermination()

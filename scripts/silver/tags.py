@@ -21,6 +21,7 @@ query = tags_df.writeStream \
   .format("delta") \
   .outputMode("append") \
   .option("checkpointLocation", "s3a://twitch-silver/checkpoints/stream_tags/") \
+  .trigger(processingTime="60 seconds") \
   .start("s3a://twitch-silver/stream_tags/")
 
 query.awaitTermination()

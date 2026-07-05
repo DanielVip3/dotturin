@@ -97,6 +97,7 @@ query = transitions_df.writeStream \
   .format("delta") \
   .outputMode("append") \
   .option("checkpointLocation", "s3a://twitch-silver/checkpoints/stream_transitions/") \
+  .trigger(processingTime="60 seconds") \
   .start("s3a://twitch-silver/stream_transitions/")
 
 query.awaitTermination()
