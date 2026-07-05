@@ -90,5 +90,5 @@ def top_tags_by_viewers(tags: pl.DataFrame, streams: pl.DataFrame, n: int) -> pl
     .sort("avg_viewers", descending=True) \
     .head(n)
 
-def format_datetime(dt: datetime):
+def format_datetime(dt: datetime) -> str:
   return dt.strftime("%B %d, %Y - %H:%M:%S")

@@ -3,8 +3,7 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType, 
 from pyspark.sql.streaming.state import GroupState, GroupStateTimeout
 import pandas as pd
 
-STREAM_TIMEOUT_HOURS   = 12   # After 12 hour with no data, the stream is considered offline
-VIEWER_DELTA_THRESHOLD = 500  # If 500 viewers are gained in 1 minute, then it is considered a huge viewer raise 
+STREAM_TIMEOUT_HOURS = 12   # After 12 hour with no data, the stream is considered offline
 
 # Initialize Spark session
 spark = get_spark_session("TwitchNoNameSilverTransitions")
@@ -19,7 +18,7 @@ bronze_df = spark.readStream \
 transitions_schema = StructType([
   StructField("stream_id", StringType()),
   StructField("user_name", StringType()),
-  StructField("event_type", StringType()), # can be "GAME_CHANGE", "TITLE_CHANGE", "VIEWER_PEAK"
+  StructField("event_type", StringType()), # can be "GAME_CHANGE" or "TITLE_CHANGE"
   StructField("old_value", StringType()),
   StructField("new_value", StringType()),
   StructField("event_ts", TimestampType()),
@@ -60,10 +59,6 @@ def detect_stream_transitions(grouping_key, dfs, state: GroupState):
         # Case 2: title change event
         if row["title"] != old_title:
           events.append([stream_id, row["user_name"], "TITLE_CHANGE", str(old_title), str(row["title"]), row["ingestion_ts"], viewer_delta])
-        
-        # Case 3: big spectator peak in a minute [TODO: revise]
-        if viewer_delta > VIEWER_DELTA_THRESHOLD:
-          events.append([stream_id, row["user_name"], "VIEWER_PEAK", str(old_viewers), str(row["viewer_count"]), row["ingestion_ts"], viewer_delta])
 
         state.update((row["game_name"], row["title"], row["viewer_count"], row["ingestion_ts"]))
   

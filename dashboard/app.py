@@ -66,6 +66,4 @@ components.language_hour(latest)
 
 components.tags(top_tags_by_frequency(tags, top_n), top_tags_by_viewers(tags, streams, top_n))
 
-components.events_stats(transitions, top_n)
-
-components.events_list(transitions, top_n, format_datetime)
+components.events(transitions, top_n, format_datetime)

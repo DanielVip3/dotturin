@@ -1,5 +1,4 @@
-from .events_list import events_list
-from .events_stats import events_stats
+from .events import events
 from .kpis import kpis
 from .language_hour import language_hour
 from .sorted_hbar import sorted_hbar
