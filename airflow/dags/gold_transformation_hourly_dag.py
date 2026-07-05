@@ -1,0 +1,24 @@
+from common import *
+from airflow.sdk import dag
+from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
+
+@dag(
+  dag_id='gold_hourly_transformation',
+  default_args=default_args,
+  description='Incremental batch transformation from silver to gold every hour, for fact_game_hourly_df Fact table',
+  schedule='0 * * * *',
+  start_date=start_date,
+  catchup=False
+)
+def gold_hourly_transformation():
+  run_gold_hourly = SparkSubmitOperator(
+    task_id='run_gold',
+    application='/opt/airflow/scripts/transform_gold_hourly.py',
+    conn_id='spark_default',
+    conf={
+      'spark.cores.max': SPARK_APP_CORES
+    },
+    verbose=True
+  )
+
+gold_hourly_transformation()

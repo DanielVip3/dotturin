@@ -2,3 +2,4 @@ requests
 confluent-kafka
 python-dotenv
 apache-airflow[apache-spark]
+delta-spark==4.0.1
