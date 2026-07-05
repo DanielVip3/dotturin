@@ -13,7 +13,7 @@ from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOpe
   catchup=False
 )
 def nightly_maintenance_dag():
-  # Task 1 for bronze
+  # Task 1 for bronze on current year and month
   # data_interval_start inside the template refers to the previous day
   # (i.e. the day that just passed at 00:00).
   optimize_bronze = SparkSubmitOperator(
@@ -22,8 +22,7 @@ def nightly_maintenance_dag():
     application_args=[
       'bronze', 
       '{{ data_interval_start.strftime("%Y") }}', 
-      '{{ data_interval_start.strftime("%-m") }}', 
-      '{{ data_interval_start.strftime("%-d") }}'
+      '{{ data_interval_start.strftime("%-m") }}'
     ],
     conn_id='spark_default',
     conf={
