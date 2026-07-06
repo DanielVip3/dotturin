@@ -8,7 +8,7 @@ RUN apk add --no-cache curl
 # Create /opt/spark/jars directory
 RUN mkdir -p /opt/spark/jars
 
-# Install required JAR connectors in /opt/spark/jars. From: https://mvnrepository.com/artifact/org.apache.spark/spark-sql-kafka-0-10_2.13/4.0.3/dependencies
+# Install required JAR connectors in /opt/spark/jars
 # 1. Spark SQL Kafka 4.0.3
 RUN curl -L -o /opt/spark/jars/spark-sql-kafka-0-10_2.13-4.0.3.jar \
   https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.13/4.0.3/spark-sql-kafka-0-10_2.13-4.0.3.jar && \
