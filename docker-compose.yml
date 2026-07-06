@@ -17,6 +17,9 @@ x-airflow-common:
     AIRFLOW_CONN_SPARK_DEFAULT: 'spark://spark-master:7077'
     MINIO_ROOT_USER: ${MINIO_ROOT_USER}
     MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+    CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+    CLICKHOUSE_DB: ${CLICKHOUSE_DB}
     TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID}
     TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET}
     TOPIC_NAME: ${TOPIC_NAME}
@@ -185,6 +188,9 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       TOPIC_NAME: ${TOPIC_NAME}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB}
     ports:
       - "8082:8081"
     networks:
@@ -215,11 +221,32 @@ services:
     restart: unless-stopped
     networks:
       - pipeline_net
+  
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8123:8123"   # HTTP interface
+      - "9005:9000"   # Native interface
+    environment:
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB}
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - ./clickhouse/init:/docker-entrypoint-initdb.d
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - pipeline_net
 
 volumes:
   minio_data:
   kafka_data:
   postgres_data:
+  clickhouse_data:
 
 networks:
   pipeline_net:

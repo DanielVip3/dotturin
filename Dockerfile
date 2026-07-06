@@ -32,8 +32,10 @@ RUN curl -L -o /opt/spark/jars/spark-sql-kafka-0-10_2.13-4.0.3.jar \
   https://repo1.maven.org/maven2/io/delta/delta-spark_2.13/4.0.1/delta-spark_2.13-4.0.1.jar && \
   # 8. Delta Storage 4.0.1
   curl -L -o /opt/spark/jars/delta-storage-4.0.1.jar \
-  https://repo1.maven.org/maven2/io/delta/delta-storage/4.0.1/delta-storage-4.0.1.jar
-
+  https://repo1.maven.org/maven2/io/delta/delta-storage/4.0.1/delta-storage-4.0.1.jar && \
+  # 9. ClickHouse JDBC 0.6.0 ('all' for transitive dependencies)
+  curl -L -o /opt/spark/jars/clickhouse-jdbc-0.6.0-all.jar \
+  https://repo1.maven.org/maven2/com/clickhouse/clickhouse-jdbc/0.6.0/clickhouse-jdbc-0.6.0-all.jar
 
 
 # --- Spark ---
