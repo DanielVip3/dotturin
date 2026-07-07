@@ -18,7 +18,9 @@ def main():
     if len(sys.argv) < 4:
       print("[!] Error: At least year and month are required for bronze optimization.")
       sys.exit(1)
-        
+
+    spark.sql(f"OPTIMIZE delta.`s3a://twitch-bronze/games/`")
+
     year, month = int(sys.argv[2]), int(sys.argv[3])
 
     if len(sys.argv) == 4:

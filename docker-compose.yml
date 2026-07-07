@@ -22,7 +22,8 @@ x-airflow-common:
     CLICKHOUSE_DB: ${CLICKHOUSE_DB}
     TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID}
     TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET}
-    TOPIC_NAME: ${TOPIC_NAME}
+    TOPIC_STREAMS: ${TOPIC_STREAMS}
+    TOPIC_GAMES: ${TOPIC_GAMES}
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
@@ -139,15 +140,17 @@ services:
     networks:
       - pipeline_net
 
-  # Init container to initialize Kafka topic before running consumer in Spark
+  # Init container to initialize Kafka topics before running consumer in Spark
   kafka-init-topics:
     image: confluentinc/cp-kafka:latest
     depends_on:
       kafka:
         condition: service_started
-    command: [ "/bin/bash", "-c", "/create_topic.sh"]
-    environment:
-      TOPIC_NAME: ${TOPIC_NAME}
+    command: >
+      /bin/bash -c "
+      /create_topic.sh "${TOPIC_STREAMS}" && 
+      /create_topic.sh "${TOPIC_GAMES}"
+      "
     volumes:
       - type: bind
         source: ./create_topic.sh
@@ -187,7 +190,8 @@ services:
       SPARK_PUBLIC_DNS: 'spark-worker'
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      TOPIC_NAME: ${TOPIC_NAME}
+      TOPIC_STREAMS: ${TOPIC_STREAMS}
+      TOPIC_GAMES: ${TOPIC_GAMES}
       CLICKHOUSE_USER: ${CLICKHOUSE_USER}
       CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
       CLICKHOUSE_DB: ${CLICKHOUSE_DB}
@@ -215,7 +219,8 @@ services:
       SPARK_APP_CORES: ${SPARK_APP_CORES}
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      TOPIC_NAME: ${TOPIC_NAME}
+      TOPIC_STREAMS: ${TOPIC_STREAMS}
+      TOPIC_GAMES: ${TOPIC_GAMES}
     working_dir: /app
     command: bash spark_submit_jobs.sh
     restart: unless-stopped

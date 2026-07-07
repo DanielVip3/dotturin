@@ -1,11 +1,12 @@
 import os
 from dotenv import load_dotenv
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType, TimestampType, ArrayType
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, TimestampType, ArrayType, DoubleType, LongType
 
 load_dotenv()
 
-TOPIC_NAME = os.environ.get("TOPIC_NAME")
+TOPIC_STREAMS = os.environ.get("TOPIC_STREAMS")
+TOPIC_GAMES = os.environ.get("TOPIC_GAMES")
 
 def get_spark_session(app_name: str, master: str|None = None) -> SparkSession:
   """
@@ -35,19 +36,42 @@ def get_spark_session(app_name: str, master: str|None = None) -> SparkSession:
   return spark
 
 
-# Twitch API schema
+# Twitch stream API schema
 stream_schema = StructType([
-  StructField("id", StringType()),
-  StructField("user_name", StringType()),
-  StructField("game_name", StringType()),
-  StructField("title", StringType()),
-  StructField("tags", ArrayType(StringType())),
-  StructField("viewer_count", IntegerType()),
-  StructField("started_at", TimestampType()),
-  StructField("language", StringType()),
-  StructField("thumbnail_url", StringType())
+  StructField("data", ArrayType(StructType([
+    StructField("id", StringType()),
+    StructField("user_name", StringType()),
+    StructField("game_name", StringType()),
+    StructField("title", StringType()),
+    StructField("tags", ArrayType(StringType())),
+    StructField("viewer_count", IntegerType()),
+    StructField("started_at", TimestampType()),
+    StructField("language", StringType()),
+    StructField("thumbnail_url", StringType())
+  ])))
 ])
 
-twitch_api_schema = StructType([
-  StructField("data", ArrayType(stream_schema))
+# Twitch game API schema
+game_schema = StructType([
+  StructField("data", ArrayType(StructType([
+    StructField("id", StringType()),
+    StructField("name", StringType()),
+    StructField("igdb_id", StringType()),
+    StructField("igdb_data", StructType([
+      StructField("id", IntegerType()),
+      StructField("summary", StringType()),
+      StructField("total_rating", DoubleType()),
+      StructField("total_rating_count", IntegerType()),
+      StructField("first_release_date", TimestampType()),
+      StructField("storyline", StringType()),
+      StructField("url", StringType()),
+      StructField("themes", ArrayType(StringType())),
+      StructField("player_perspectives", ArrayType(StringType())),
+      StructField("platforms", ArrayType(StringType())),
+      StructField("platform_families", ArrayType(StringType())),
+      StructField("platform_types", ArrayType(StringType())),
+      StructField("keywords", ArrayType(StringType())),
+      StructField("game_modes", ArrayType(StringType()))
+    ]))
+  ])))
 ])
