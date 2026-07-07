@@ -35,13 +35,15 @@ def process_gold(batch_df: DataFrame, _: int):
   Processes the hourly micro-batch to insert into Dimensions and Fact tables.
   """
 
-  batch_df.persist()
+  clean_batch_df = batch_df.filter(
+    col("game_name").isNotNull() & (expr("trim(game_name)") != "")
+  )
+  clean_batch_df.persist()
 
   # dim_game Dimension table
   dim_game_df = batch_df \
     .select("game_name") \
     .distinct() \
-    .filter(col("game_name") != "") \
     .withColumn("game_id", expr("xxhash64(game_name)")) # integer hash of game_name
 
   write_to_clickhouse(dim_game_df, "dim_game")
