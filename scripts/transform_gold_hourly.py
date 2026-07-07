@@ -1,7 +1,7 @@
 from common import get_spark_session
 import os
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, md5, max, avg, countDistinct
+from pyspark.sql.functions import col, max, sum, count, countDistinct, expr, concat, lpad
 
 # Initialize Spark session
 spark = get_spark_session("TwitchNoNameGoldHourly")
@@ -36,36 +36,61 @@ def process_gold(batch_df: DataFrame, _: int):
   """
 
   batch_df.persist()
-  
-  # dim_game Dimension table; compute game_id by hashing game_name
+
+  # dim_game Dimension table
   dim_game_df = batch_df \
     .select("game_name") \
     .distinct() \
     .filter(col("game_name") != "") \
-    .withColumn("game_id", md5(col("game_name")))
+    .withColumn("game_id", expr("xxhash64(game_name)")) # integer hash of game_name
 
   write_to_clickhouse(dim_game_df, "dim_game")
+
+
+  # dim_date Dimension table
+  dim_date_df = batch_df \
+    .select(
+      col("started_year").alias("date_year"),
+      col("started_month").alias("date_month"),
+      col("started_day").alias("date_day")
+    ) \
+    .distinct() \
+    .withColumn("date_id", # number like 20260707
+      concat(
+        col("date_year"), 
+        lpad(col("date_month"), 2, "0"), 
+        lpad(col("date_day"), 2, "0")
+      ).cast("long")
+    )
+
+  write_to_clickhouse(dim_date_df, "dim_date")
 
 
   # fact_game_hourly Fact table
   # Dimensions: game, date and time
   # Metrics: max viewers, avg viewers and number of unique channels
   fact_game_hourly_df = batch_df \
-    .withColumn("game_id", md5(col("game_name"))) \
+    .withColumn("game_id", expr("xxhash64(game_name)")) \
+    .withColumn("date_id",
+      concat(
+        col("started_year"),
+        lpad(col("started_month"), 2, "0"),
+        lpad(col("started_day"), 2, "0")
+      ).cast("long")
+    ) \
     .groupBy(
-      "game_id", 
-      "started_year", 
-      "started_month", 
-      "started_day", 
-      "started_hour"
+      "game_id",
+      "date_id",
+      col("started_hour").alias("time_hour")
     ).agg(
-      max("viewer_count").alias("max_concurrent_viewers"),
-      avg("viewer_count").alias("avg_viewers"),
+      max("viewer_count").alias("max_viewers"),
+      sum("viewer_count").alias("sum_viewers"),
+      count("viewer_count").alias("count_observations"),
       countDistinct("stream_id").alias("total_active_channels")
     )
 
   write_to_clickhouse(fact_game_hourly_df, "fact_game_hourly")
-    
+
   batch_df.unpersist()
 
 # Write incrementally (i.e. batch-like)

@@ -1,7 +1,9 @@
 CREATE TABLE IF NOT EXISTS dim_game
 (
-  game_id String,
-  game_name String
+  game_id Int64,
+  game_name String,
+
+  inserted_at DateTime DEFAULT now()
 )
-ENGINE = MergeTree
+ENGINE = ReplacingMergeTree(inserted_at)
 ORDER BY game_id;
