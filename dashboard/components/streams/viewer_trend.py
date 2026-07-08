@@ -23,6 +23,5 @@ def viewer_trend(streams: pl.DataFrame, top_streamers: pl.DataFrame):
         "viewer_count": "Number of viewers"
       }
     )
-    fig.update_layout(xaxis_title="Time", yaxis_title="Number of viewers")
 
     st.plotly_chart(fig, width="stretch")
