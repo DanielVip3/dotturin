@@ -23,6 +23,7 @@ SILVER_JOBS=(
   "silver/streams.py"
   "silver/tags.py"
   "silver/transitions.py"
+  "silver/games.py"
 )
 
 for job in "${SILVER_JOBS[@]}"; do

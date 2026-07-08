@@ -40,6 +40,7 @@ def main():
     spark.sql(f"OPTIMIZE delta.`s3a://twitch-silver/streams/`")
     spark.sql(f"OPTIMIZE delta.`s3a://twitch-silver/stream_tags/`")
     spark.sql(f"OPTIMIZE delta.`s3a://twitch-silver/stream_transitions/`")
+    spark.sql(f"OPTIMIZE delta.`s3a://twitch-silver/games/`")
 
     print(f"[+] Silver optimized successfully.")
 
