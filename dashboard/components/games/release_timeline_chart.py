@@ -17,17 +17,14 @@ def release_timeline_chart(trend: pl.DataFrame):
       data_frame=df,
       x="period",
       y="games_released",
-      color="avg_rating",
-      color_continuous_scale=["#D9D9E3", TWITCH_PURPLE],
-      range_color=[0, 100],
+      color_discrete_sequence=[TWITCH_PURPLE],
       title="Games tracked by release period",
       category_orders={"period": df["period"].tolist()},
     )
 
     fig.update_layout(
       xaxis_title="Release period",
-      yaxis_title="Games tracked",
-      coloraxis_colorbar=dict(title="Avg. rating"),
+      yaxis_title="Games tracked"
     )
     
     st.plotly_chart(fig, width='stretch')
