@@ -1,6 +1,7 @@
 from .streams.events import events
 from .streams.streams_kpis import streams_kpis
 from .streams.language_hour import language_hour
+from .streams.longest_streams import longest_streams
 from .streams.sorted_hbar import sorted_hbar
 from .streams.tags import tags
 from .streams.top_games_streamers import top_games_streamers

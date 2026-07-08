@@ -93,5 +93,19 @@ def top_tags_by_viewers(tags: pl.DataFrame, streams: pl.DataFrame, n: int) -> pl
     .head(n)
 
 
+def top_longest_streams(latest: pl.DataFrame, top_n: int) -> pl.DataFrame:
+  """
+  Returns the top n longest running streams from the latest snapshot.
+  """
+
+  return (
+    latest \
+    .drop_nulls(subset=["stream_time_seconds"]) \
+    .sort("stream_time_seconds", descending=True) \
+    .head(top_n) \
+    .with_columns((pl.col("stream_time_seconds") / 3600).alias("duration_hours")) # seconds to hours
+  )
+
+
 def format_datetime(dt: datetime) -> str:
   return dt.strftime("%B %d, %Y - %H:%M:%S")

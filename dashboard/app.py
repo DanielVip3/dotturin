@@ -1,7 +1,7 @@
 import streamlit as st
 import polars as pl
 import components
-from helpers.streams import latest_snapshot, top_games, top_streamers, top_tags_by_frequency, top_tags_by_viewers, format_datetime
+from helpers.streams import latest_snapshot, top_games, top_streamers, top_tags_by_frequency, top_tags_by_viewers, top_longest_streams, format_datetime
 from load_data import load_streams, load_tags, load_transitions
 from datetime import datetime, timedelta
 
@@ -82,6 +82,8 @@ components.streams_kpis(streams, latest)
 components.top_games_streamers(top_games(latest, top_n), top_streamers(streams, latest, top_n))
 
 components.viewer_trend(streams, top_streamers(streams, latest, top_n))
+
+components.longest_streams(top_longest_streams(latest, top_n))
 
 components.language_hour(latest)
 
