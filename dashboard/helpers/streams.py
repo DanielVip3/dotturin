@@ -84,12 +84,11 @@ def top_tags_by_viewers(tags: pl.DataFrame, streams: pl.DataFrame, n: int) -> pl
   streams_df = streams.select("stream_id", "ingestion_ts", "viewer_count")
 
   # Join each tag usage to the viewer count of that exact snapshot.
-  # Then average viewers per tag, and drop unique tags (very few uses).
+  # Then average viewers per tag and sort by them.
   return tags \
     .join(streams_df, on=["stream_id", "ingestion_ts"]) \
     .group_by("tag_name") \
     .agg(pl.col("viewer_count").mean().alias("avg_viewers"), pl.len().alias("uses")) \
-    .filter(pl.col("uses") >= 5) \
     .sort("avg_viewers", descending=True) \
     .head(n)
 
