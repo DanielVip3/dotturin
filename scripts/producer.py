@@ -112,37 +112,6 @@ def fetch_games_and_igdb(token, game_ids):
 
     if response_igdb.status_code == 200:
       igdb_games = response_igdb.json()
-
-      for g in igdb_games:
-        # Flatten 1-level nested arrays
-        for field in ["themes", "player_perspectives", "keywords", "game_modes"]:
-          if field in g:
-            # Extract the name and overwrite the original array
-            g[field] = [item.get("name") for item in g[field] if item.get("name")]
-
-        # Flatten platforms
-        if "platforms" in g:
-          platforms = []
-          families = []
-          types = []
-          
-          for p in g["platforms"]:
-            if p.get("name"): 
-              platforms.append(p["name"])
-            
-            if p.get("platform_family") and p["platform_family"].get("name"):
-              families.append(p["platform_family"]["name"])
-                
-            if p.get("platform_type") and p["platform_type"].get("name"):
-              types.append(p["platform_type"]["name"])
-          
-          # Overwrite platforms with a flat list
-          g["platforms"] = platforms
-
-          # Create new flat lists at the root level (using set() to remove duplicates)
-          g["platform_families"] = list(set(families))
-          g["platform_types"] = list(set(types))
-
       igdb_lookup = {str(g["id"]): g for g in igdb_games}
     else:
       print(f"[-] IGDB games API Error! Status: {response_igdb.status_code} - {response_igdb.text}")

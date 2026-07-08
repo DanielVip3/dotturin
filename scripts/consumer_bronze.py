@@ -63,25 +63,14 @@ exploded_games_df = kafka_games_df.selectExpr("CAST(value AS STRING) as json_pay
   .withColumn("parsed_json", from_json(col("json_payload"), game_schema)) \
   .withColumn("game", explode(col("parsed_json.data")))
 
-# Select flattened game columns and nested IGDB columns
+# Select high-level columns and keep the entire IGDB data struct raw and nested
 bronze_games_df = exploded_games_df.select(
   col("ingestion_ts"),
+  col("json_payload").alias("raw_payload"), # useful for future access to data discarded by silver layer
   col("game.id").alias("game_id"),
   col("game.name").alias("game_name"),
   col("game.igdb_id"),
-  col("game.igdb_data.summary"),
-  col("game.igdb_data.total_rating"),
-  col("game.igdb_data.total_rating_count"),
-  col("game.igdb_data.first_release_date"),
-  col("game.igdb_data.storyline"),
-  col("game.igdb_data.url"),
-  col("game.igdb_data.themes"),
-  col("game.igdb_data.player_perspectives"),
-  col("game.igdb_data.platforms"),
-  col("game.igdb_data.platform_families"),
-  col("game.igdb_data.platform_types"),
-  col("game.igdb_data.keywords"),
-  col("game.igdb_data.game_modes")
+  col("game.igdb_data")
 )
 
 # Write stream in Delta Lake format in bucket 'twitch-bronze' (not partitioned)

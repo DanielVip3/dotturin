@@ -52,6 +52,11 @@ stream_schema = StructType([
 ])
 
 # Twitch game API schema
+id_name_struct = StructType([
+  StructField("id", IntegerType()),
+  StructField("name", StringType())
+])
+
 game_schema = StructType([
   StructField("data", ArrayType(StructType([
     StructField("id", StringType()),
@@ -62,16 +67,18 @@ game_schema = StructType([
       StructField("summary", StringType()),
       StructField("total_rating", DoubleType()),
       StructField("total_rating_count", IntegerType()),
-      StructField("first_release_date", TimestampType()),
+      StructField("first_release_date", LongType()), # Unix timestamp
       StructField("storyline", StringType()),
       StructField("url", StringType()),
-      StructField("themes", ArrayType(StringType())),
-      StructField("player_perspectives", ArrayType(StringType())),
-      StructField("platforms", ArrayType(StringType())),
-      StructField("platform_families", ArrayType(StringType())),
-      StructField("platform_types", ArrayType(StringType())),
-      StructField("keywords", ArrayType(StringType())),
-      StructField("game_modes", ArrayType(StringType()))
+      StructField("themes", ArrayType(id_name_struct)),
+      StructField("player_perspectives", ArrayType(id_name_struct)),
+      StructField("keywords", ArrayType(id_name_struct)),
+      StructField("game_modes", ArrayType(id_name_struct)),
+      StructField("platforms", ArrayType(StructType([
+        StructField("name", StringType()),
+        StructField("platform_family", id_name_struct),
+        StructField("platform_type", id_name_struct)
+      ])))
     ]))
   ])))
 ])
