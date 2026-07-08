@@ -23,7 +23,7 @@ def _read_delta(path: str) -> pl.DataFrame:
 
 @st.cache_data(ttl=60)
 def load_streams() -> pl.DataFrame:
-  return _read_delta("s3://twitch-silver/streams_enriched/")
+  return _read_delta("s3://twitch-silver/streams/")
 
 
 @st.cache_data(ttl=60)

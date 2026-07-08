@@ -20,7 +20,7 @@ echo "[*] Starting bronze ingestion..."
 BRONZE_PID=$!
 
 SILVER_JOBS=(
-  "silver/enriched_streams.py"
+  "silver/streams.py"
   "silver/tags.py"
   "silver/transitions.py"
 )

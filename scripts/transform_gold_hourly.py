@@ -13,10 +13,10 @@ CH_PASSWORD = os.environ.get("CLICKHOUSE_PASSWORD")
 CH_DB = os.environ.get("CLICKHOUSE_DB")
 JDBC_URL = f"jdbc:ch://{CH_HOST}:{CH_PORT}/{CH_DB}?compress=0"
 
-# Read data from silver layer enriched streams Delta Lake
-silver_enriched_df = spark.readStream \
+# Read data from silver layer streams Delta Lake
+silver_streams_df = spark.readStream \
   .format("delta") \
-  .load("s3a://twitch-silver/streams_enriched/")
+  .load("s3a://twitch-silver/streams")
 
 def write_to_clickhouse(df: DataFrame, table: str):
   df.write \
@@ -96,7 +96,7 @@ def process_gold(batch_df: DataFrame, _: int):
   batch_df.unpersist()
 
 # Write incrementally (i.e. batch-like)
-query = silver_enriched_df.writeStream \
+query = silver_streams_df.writeStream \
   .outputMode("update") \
   .foreachBatch(process_gold) \
   .option("checkpointLocation", "s3a://twitch-gold/checkpoints/fact_game_hourly/") \

@@ -37,7 +37,7 @@ def main():
   elif layer == "silver":    
     print(f"[*] Optimizing silver layer...")
 
-    spark.sql(f"OPTIMIZE delta.`s3a://twitch-silver/streams_enriched/`")
+    spark.sql(f"OPTIMIZE delta.`s3a://twitch-silver/streams/`")
     spark.sql(f"OPTIMIZE delta.`s3a://twitch-silver/stream_tags/`")
     spark.sql(f"OPTIMIZE delta.`s3a://twitch-silver/stream_transitions/`")
 

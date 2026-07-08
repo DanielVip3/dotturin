@@ -2,7 +2,7 @@ from common import get_spark_session
 from pyspark.sql.functions import col, regexp_replace, unix_timestamp, year, month, hour, day
 
 # Initialize Spark session
-spark = get_spark_session("TwitchNoNameSilverEnriched")
+spark = get_spark_session("TwitchNoNameSilverStreams")
 
 # Read data from bronze layer Delta Lake
 bronze_df = spark.readStream \
@@ -23,8 +23,8 @@ enriched_df = bronze_df \
 query = enriched_df.writeStream \
   .format("delta") \
   .outputMode("append") \
-  .option("checkpointLocation", "s3a://twitch-silver/checkpoints/streams_enriched/") \
+  .option("checkpointLocation", "s3a://twitch-silver/checkpoints/streams/") \
   .trigger(processingTime="60 seconds") \
-  .start("s3a://twitch-silver/streams_enriched/")
+  .start("s3a://twitch-silver/streams/")
 
 query.awaitTermination()
