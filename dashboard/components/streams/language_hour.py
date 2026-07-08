@@ -14,7 +14,12 @@ def language_hour(latest: pl.DataFrame):
         .agg(pl.len().alias("streams")) \
         .sort("streams", descending=True)
       
-      fig = px.pie(lang_df.to_pandas(), names="language", values="streams", hole=0.4)
+      fig = px.pie(
+        lang_df.to_pandas(),
+        names="language",
+        values="streams",
+        hole=0.4
+      )
       st.plotly_chart(fig, width="stretch")
 
     with c4:
@@ -25,5 +30,14 @@ def language_hour(latest: pl.DataFrame):
         .agg(pl.len().alias("streams")) \
         .sort("started_hour")
       
-      fig = px.line(hour_df.to_pandas(), x="started_hour", y="streams")
+      fig = px.line(
+        hour_df.to_pandas(),
+        x="started_hour",
+        y="streams",
+        labels={
+          "started_hour": "Started hour",
+          "streams": "Number of streams"
+        }
+      )
+
       st.plotly_chart(fig, width="stretch")

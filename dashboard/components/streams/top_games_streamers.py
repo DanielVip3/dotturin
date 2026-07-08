@@ -8,8 +8,16 @@ def top_games_streamers(top_games: pl.DataFrame, top_streamers: pl.DataFrame):
     c1, c2 = st.columns(2)
 
     with c1:
-      st.subheader("Top games right now (among top 100 streams)")
-      st.plotly_chart(sorted_hbar(top_games, "total_viewers", "game_name", "streams"), width="stretch")
+      st.subheader("Top streamed games right now")
+      st.plotly_chart(sorted_hbar(
+        df=top_games,
+        x="total_viewers",
+        y="game_name",
+        x_title="Number of viewers",
+        y_title="Game",
+        text="streams",
+        text_template="%{text:,} stream(s)"
+      ), width="stretch")
 
     with c2:
       st.subheader("Top online streamers in last 10 min. by average, current and peak viewers")
@@ -20,6 +28,19 @@ def top_games_streamers(top_games: pl.DataFrame, top_streamers: pl.DataFrame):
         top_streamers.select("user_name", pl.lit("avg").alias("metric"), "avg_viewers_10").rename({"avg_viewers_10": "viewers"})
       ])
 
-      fig = px.bar(reshaped.to_pandas(), x="viewers", y="user_name", color="metric", orientation="h", barmode="overlay")
+      fig = px.bar(
+        reshaped.to_pandas(),
+        x="viewers",
+        y="user_name",
+        color="metric",
+        orientation="h",
+        barmode="overlay",
+        labels={
+          "viewers": "Number of viewers",
+          "user_name": "Streamer",
+          "metric": "Metric"
+        },
+      )
       fig.update_layout(yaxis={"categoryorder": "total ascending"})
+
       st.plotly_chart(fig, width="stretch")
