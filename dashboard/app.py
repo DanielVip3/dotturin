@@ -67,9 +67,10 @@ if selected_games:
 if selected_languages:
   streams = streams.filter(pl.col("language").is_in(selected_languages))
 
-# Filter tags and transitions by joining
-tags = tags.join(streams, on=["stream_id", "ingestion_ts"])
-transitions = transitions.join(streams, on=["stream_id"])
+# Filter tags and transitions
+stream_ids = streams["stream_id"].unique().implode()
+tags = tags.filter(pl.col("stream_id").is_in(stream_ids))
+transitions = transitions.filter(pl.col("stream_id").is_in(stream_ids))
 
 latest = latest_snapshot(streams, selected_datetime)
 
