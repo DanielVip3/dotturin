@@ -18,13 +18,24 @@ if streams.is_empty():
   st.warning("No data available.")
   st.stop()
 
-all_games = sorted(streams["game_name"].drop_nulls().unique().to_list())
+all_games = sorted(
+  streams["game_name"] \
+    .drop_nulls() \
+    .unique() \
+    .to_list()
+)
 
-
-# ---- Sidebar filters ----
+all_languages = sorted(
+  streams["language"] \
+    .drop_nulls() \
+    .unique() \
+    .to_list()
+)
 
 max_time = streams["ingestion_ts"].max()
 min_time = streams["ingestion_ts"].min()
+
+# ---- Sidebar filters ----
  
 selected_date = st.sidebar.date_input(
   "Select date",
@@ -45,11 +56,16 @@ st.sidebar.caption(f"Viewing: {format_datetime(selected_datetime)}")
 
 selected_games = st.sidebar.multiselect("Filter by game", all_games)
 
+selected_languages = st.sidebar.multiselect("Filter by language", all_languages)
+
 top_n = st.sidebar.slider("Top N", 1, 20, 10)
 
+# Filters only applied to the streams table, tags/transitions stay unfiltered [TODO: revise]
 if selected_games:
-  # Only applied to the streams table, tags/transitions stay unfiltered [TODO: revise]
   streams = streams.filter(pl.col("game_name").is_in(selected_games))
+
+if selected_languages:
+  streams = streams.filter(pl.col("language").is_in(selected_languages))
 
 latest = latest_snapshot(streams, selected_datetime)
 
