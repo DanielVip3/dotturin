@@ -60,12 +60,16 @@ selected_languages = st.sidebar.multiselect("Filter by language", all_languages)
 
 top_n = st.sidebar.slider("Top N", 1, 20, 10)
 
-# Filters only applied to the streams table, tags/transitions stay unfiltered [TODO: revise]
+# Application of filters
 if selected_games:
   streams = streams.filter(pl.col("game_name").is_in(selected_games))
 
 if selected_languages:
   streams = streams.filter(pl.col("language").is_in(selected_languages))
+
+# Filter tags and transitions by joining
+tags = tags.join(streams, on=["stream_id", "ingestion_ts"])
+transitions = transitions.join(streams, on=["stream_id"])
 
 latest = latest_snapshot(streams, selected_datetime)
 
