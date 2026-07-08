@@ -70,7 +70,7 @@ def process_gold(batch_df: DataFrame, _: int):
 
   # fact_game_hourly Fact table
   # Dimensions: game, date and time
-  # Metrics: max viewers, avg viewers and number of unique channels
+  # Measures: max viewers, avg viewers and number of unique channels
   fact_game_hourly_df = batch_df \
     .withColumn("game_id", expr("xxhash64(game_name)")) \
     .withColumn("date_id",
