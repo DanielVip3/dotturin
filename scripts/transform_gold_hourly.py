@@ -110,7 +110,7 @@ def process_gold(batch_df: DataFrame, _: int):
   write_to_clickhouse(dim_date_df, "dim_date")
 
 
-  # fact_stream_hourly Fact table
+  # Fact table with hourly streams measures
   # Dimensions: game, streamer, language, date, time
   # Measures: max viewers, avg viewers and number of observations in API
   fact_stream_hourly_df = clean_batch_df \
@@ -140,7 +140,7 @@ def process_gold(batch_df: DataFrame, _: int):
 
   batch_df.unpersist()
 
-# Write incrementally (i.e. batch-like)
+# Process each batch (to write in ClickHouse) and store checkpoints in gold layer Delta Lake
 query = silver_streams_df.writeStream \
   .outputMode("update") \
   .foreachBatch(process_gold) \
