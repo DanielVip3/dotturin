@@ -7,7 +7,8 @@ def games_explorer(games: pl.DataFrame):
     st.caption("Browse the IGDB games catalog, filtered by theme or platform.")
 
     all_themes = sorted(
-      games.select("themes") \
+      games \
+        .select("themes") \
         .explode("themes") \
         .drop_nulls() \
         .unique() \
@@ -16,7 +17,8 @@ def games_explorer(games: pl.DataFrame):
     )
 
     all_platforms = sorted(
-      games.select("platforms") \
+      games \
+        .select("platforms") \
         .explode("platforms") \
         .drop_nulls() \
         .unique() \
