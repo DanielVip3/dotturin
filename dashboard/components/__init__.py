@@ -15,3 +15,22 @@ from .games.rating_distribution import rating_distribution
 from .games.rating_popularity import rating_popularity
 from .games.release_timeline_chart import release_timeline_chart
 from .games.top_rated_table import top_rated_table
+
+__all__ = [
+  "events",
+  "streams_kpis",
+  "language_hour",
+  "longest_streams",
+  "sorted_hbar",
+  "tags",
+  "top_games_streamers",
+  "viewer_trend",
+  "categories",
+  "category_sorted_hbar",
+  "games_explorer",
+  "games_kpis",
+  "rating_distribution",
+  "rating_popularity",
+  "release_timeline_chart",
+  "top_rated_table"
+]

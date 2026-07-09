@@ -19,7 +19,7 @@ def main():
       print("[!] Error: At least year and month are required for bronze optimization.")
       sys.exit(1)
 
-    spark.sql(f"OPTIMIZE delta.`s3a://twitch-bronze/games/`")
+    spark.sql("OPTIMIZE delta.`s3a://twitch-bronze/games/`")
 
     year, month = int(sys.argv[2]), int(sys.argv[3])
 
@@ -35,14 +35,14 @@ def main():
       print(f"[+] Bronze optimized successfully for Year={year}, Month={month}, Day={day}.")
 
   elif layer == "silver":    
-    print(f"[*] Optimizing silver layer...")
+    print("[*] Optimizing silver layer...")
 
-    spark.sql(f"OPTIMIZE delta.`s3a://twitch-silver/streams/`")
-    spark.sql(f"OPTIMIZE delta.`s3a://twitch-silver/stream_tags/`")
-    spark.sql(f"OPTIMIZE delta.`s3a://twitch-silver/stream_transitions/`")
-    spark.sql(f"OPTIMIZE delta.`s3a://twitch-silver/games/`")
+    spark.sql("OPTIMIZE delta.`s3a://twitch-silver/streams/`")
+    spark.sql("OPTIMIZE delta.`s3a://twitch-silver/stream_tags/`")
+    spark.sql("OPTIMIZE delta.`s3a://twitch-silver/stream_transitions/`")
+    spark.sql("OPTIMIZE delta.`s3a://twitch-silver/games/`")
 
-    print(f"[+] Silver optimized successfully.")
+    print("[+] Silver optimized successfully.")
 
   spark.stop()
 

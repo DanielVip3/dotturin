@@ -1,4 +1,4 @@
-from common import *
+from common import SPARK_APP_CORES, SPARK_APP_MEMORY, SPARK_NUM_PARTITIONS, start_date, default_args
 from airflow.sdk import dag
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 

@@ -1,4 +1,4 @@
-from common import *
+from common import SPARK_APP_CORES, start_date, default_args
 from airflow.sdk import dag
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 
@@ -11,7 +11,7 @@ from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOpe
   catchup=False
 )
 def gold_hourly_transformation():
-  run_gold_hourly = SparkSubmitOperator(
+  SparkSubmitOperator(
     task_id='run_gold',
     application='/opt/airflow/scripts/gold/clickhouse_hourly.py',
     conn_id='spark_default',

@@ -1,4 +1,4 @@
-from common import *
+from common import start_date, default_args
 from airflow.sdk import dag, task
 
 @dag(

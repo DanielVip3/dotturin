@@ -130,7 +130,7 @@ def main():
     print("[*] Generating Twitch OAuth token...")
     token = get_twitch_token()
 
-    print(f"\n[*] Fetching top streams...")
+    print("\n[*] Fetching top streams...")
     data = fetch_top_streams(token)
     
     if data is not None:
