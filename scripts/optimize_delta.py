@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def main():
   if len(sys.argv) < 2:
     print("Usage: optimize_delta.py [bronze|silver] [year] [month] [day]")
@@ -31,10 +32,12 @@ def main():
       day = int(sys.argv[4])
 
       print(f"[*] Optimizing bronze layer for Year={year}, Month={month}, Day={day}...")
-      spark.sql(f"OPTIMIZE delta.`s3a://twitch-bronze/streams/` WHERE year = {year} AND month = {month} AND day = {day}")
+      spark.sql(
+        f"OPTIMIZE delta.`s3a://twitch-bronze/streams/` WHERE year = {year} AND month = {month} AND day = {day}"
+      )
       print(f"[+] Bronze optimized successfully for Year={year}, Month={month}, Day={day}.")
 
-  elif layer == "silver":    
+  elif layer == "silver":
     print("[*] Optimizing silver layer...")
 
     spark.sql("OPTIMIZE delta.`s3a://twitch-silver/streams/`")
@@ -45,6 +48,7 @@ def main():
     print("[+] Silver optimized successfully.")
 
   spark.stop()
+
 
 if __name__ == "__main__":
   main()

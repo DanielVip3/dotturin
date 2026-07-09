@@ -32,5 +32,5 @@ __all__ = [
   "rating_distribution",
   "rating_popularity",
   "release_timeline_chart",
-  "top_rated_table"
+  "top_rated_table",
 ]

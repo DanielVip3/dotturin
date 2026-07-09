@@ -3,6 +3,7 @@ import streamlit as st
 import plotly.express as px
 from theme import TWITCH_PURPLE
 
+
 def release_timeline_chart(trend: pl.DataFrame):
   with st.container(border=True):
     st.subheader("Release timeline")
@@ -22,9 +23,6 @@ def release_timeline_chart(trend: pl.DataFrame):
       category_orders={"period": df["period"].tolist()},
     )
 
-    fig.update_layout(
-      xaxis_title="Release period",
-      yaxis_title="Games tracked"
-    )
-    
-    st.plotly_chart(fig, width='stretch')
+    fig.update_layout(xaxis_title="Release period", yaxis_title="Games tracked")
+
+    st.plotly_chart(fig, width="stretch")

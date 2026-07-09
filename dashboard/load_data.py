@@ -10,8 +10,9 @@ STORAGE_OPTIONS = {
   "AWS_SECRET_ACCESS_KEY": os.environ.get("MINIO_ROOT_PASSWORD"),
   "AWS_ENDPOINT_URL": "http://localhost:9000",
   "AWS_REGION": "us-east-1",
-  "AWS_ALLOW_HTTP": "true"
+  "AWS_ALLOW_HTTP": "true",
 }
+
 
 def _read_delta(path: str) -> pl.DataFrame:
   try:

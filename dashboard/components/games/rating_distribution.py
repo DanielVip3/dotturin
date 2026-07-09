@@ -4,6 +4,7 @@ import streamlit as st
 import plotly.express as px
 from theme import TWITCH_PURPLE
 
+
 def rating_distribution(games: pl.DataFrame, top_rated: pl.DataFrame):
   with st.container(border=True):
     st.subheader("Ratings")
@@ -25,7 +26,7 @@ def rating_distribution(games: pl.DataFrame, top_rated: pl.DataFrame):
       )
       fig.update_layout(xaxis_title="Rating", yaxis_title="Number of games")
 
-      st.plotly_chart(fig, width='stretch')
+      st.plotly_chart(fig, width="stretch")
 
     with c2:
       fig = px.scatter(
@@ -39,6 +40,6 @@ def rating_distribution(games: pl.DataFrame, top_rated: pl.DataFrame):
       )
       fig.update_layout(xaxis_title="Number of ratings (log)", yaxis_title="Rating")
 
-      st.plotly_chart(fig, width='stretch')
-    
+      st.plotly_chart(fig, width="stretch")
+
     top_rated_table(top_rated)

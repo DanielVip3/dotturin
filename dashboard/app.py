@@ -1,7 +1,15 @@
 import streamlit as st
 import polars as pl
 import components
-from helpers.streams import latest_snapshot, top_games, top_streamers, top_tags_by_frequency, top_tags_by_viewers, top_longest_streams, format_datetime
+from helpers.streams import (
+  latest_snapshot,
+  top_games,
+  top_streamers,
+  top_tags_by_frequency,
+  top_tags_by_viewers,
+  top_longest_streams,
+  format_datetime,
+)
 from load_data import load_streams, load_tags, load_transitions
 from datetime import datetime, timedelta
 
@@ -18,37 +26,23 @@ if streams.is_empty():
   st.warning("No data available.")
   st.stop()
 
-all_games = sorted(
-  streams["game_name"] \
-    .drop_nulls() \
-    .unique() \
-    .to_list()
-)
+all_games = sorted(streams["game_name"].drop_nulls().unique().to_list())
 
-all_languages = sorted(
-  streams["language"] \
-    .drop_nulls() \
-    .unique() \
-    .to_list()
-)
+all_languages = sorted(streams["language"].drop_nulls().unique().to_list())
 
 max_time = streams["ingestion_ts"].max()
 min_time = streams["ingestion_ts"].min()
 
 # ---- Sidebar filters ----
- 
+
 selected_date = st.sidebar.date_input(
   "Select date",
   value=max_time.date(),
   min_value=min_time.date(),
-  max_value=max_time.date()
+  max_value=max_time.date(),
 )
- 
-selected_time = st.sidebar.time_input(
-  "Select time",
-  value=max_time.time(),
-  step=timedelta(minutes=1)
-)
+
+selected_time = st.sidebar.time_input("Select time", value=max_time.time(), step=timedelta(minutes=1))
 
 selected_datetime = datetime.combine(selected_date, selected_time)
 

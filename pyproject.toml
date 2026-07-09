@@ -1,0 +1,7 @@
+[tool.ruff]
+indent-width = 2
+line-length = 120
+
+[tool.ruff.format]
+indent-style = "space"
+skip-magic-trailing-comma = false

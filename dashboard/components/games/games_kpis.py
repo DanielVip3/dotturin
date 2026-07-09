@@ -1,6 +1,7 @@
 import polars as pl
 import streamlit as st
 
+
 def games_kpis(games: pl.DataFrame):
   total_games = games.height
   with_igdb = games.filter(pl.col("igdb_id").is_not_null()).height
@@ -9,9 +10,9 @@ def games_kpis(games: pl.DataFrame):
   rated = games.filter(pl.col("total_rating").is_not_null())
   avg_rating = rated["total_rating"].mean() if not rated.is_empty() else None
 
-  most_reviewed = games.filter(pl.col("total_rating_count").is_not_null()) \
-    .sort("total_rating_count", descending=True) \
-    .head(1)
+  most_reviewed = (
+    games.filter(pl.col("total_rating_count").is_not_null()).sort("total_rating_count", descending=True).head(1)
+  )
 
   most_reviewed_name = most_reviewed["game_name"][0] if not most_reviewed.is_empty() else None
   most_reviewed_count = most_reviewed["total_rating_count"][0] if not most_reviewed.is_empty() else None

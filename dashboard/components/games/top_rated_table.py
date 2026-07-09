@@ -1,6 +1,7 @@
 import polars as pl
 import streamlit as st
 
+
 def top_rated_table(top_rated: pl.DataFrame):
   st.markdown("**Top rated games**")
 
@@ -10,9 +11,7 @@ def top_rated_table(top_rated: pl.DataFrame):
 
   st.dataframe(
     top_rated.to_pandas(),
-    width='stretch',
+    width="stretch",
     hide_index=True,
-    column_config={
-      "url": st.column_config.LinkColumn("IGDB page")
-    },
+    column_config={"url": st.column_config.LinkColumn("IGDB page")},
   )
