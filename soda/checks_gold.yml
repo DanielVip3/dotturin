@@ -1,0 +1,81 @@
+# Missing counts on primary keys are redundant as they are
+# non-nullable in ClickHouse anyways; however, we keep them
+# as we want those checks to be a single source of truth for
+# all databases using this data (and some may not enforce
+# the existence of those fields).
+
+checks for dim_game_final:
+  - missing_count(game_id) = 0
+  - missing_count(game_name) = 0
+  - duplicate_count(game_id) = 0
+  - min(total_rating) >= 0:
+      name: Total rating must 0 or greater
+  - max(total_rating) <= 100:
+      name: Total rating must be 100 or less
+
+checks for dim_date_final:
+  - missing_count(date_id) = 0
+  - duplicate_count(date_id) = 0
+  - min(date_month) >= 1:
+      name: Month must be 1 or greater
+  - max(date_month) <= 12:
+      name: Month must be 12 or less
+  - min(date_day) >= 1:
+      name: Day must be 1 or greater
+  - max(date_day) <= 31:
+      name: Day must be 31 or less
+
+checks for dim_streamer_final:
+  - missing_count(streamer_id) = 0
+  - duplicate_count(streamer_id) = 0
+  - missing_count(user_name) = 0
+  - duplicate_count(streamer_id) = 0
+
+checks for dim_language_final:
+  - missing_count(language_id) = 0
+  - duplicate_count(language_id) = 0
+  - missing_count(language) = 0
+  - duplicate_count(language_id) = 0
+
+checks for fact_stream_hourly_final:
+  - missing_count(game_id) = 0
+  - missing_count(date_id) = 0
+  - missing_count(streamer_id) = 0
+  - missing_count(language_id) = 0
+  - missing_count(time_hour) = 0
+  - duplicate_count(game_id, date_id, streamer_id, language_id, time_hour) = 0
+
+  - min(time_hour) >= 0:
+      name: Hour must be 0 or greater
+  - max(time_hour) <= 23:
+      name: Hour must be 23 or less
+
+  - max(count_observations) <= 60:
+      name: There must be at most 60 polls (observations) per hour bucket
+  - min(count_observations) >= 1:
+      name: A fact row cannot exist without at least one observation
+  - min(max_viewers) >= 0:
+      name: The maximum number of viewers must be 0 or greater
+  - min(sum_viewers) >= 0:
+      name: The total number of viewers must be 0 or greater
+  
+  - failed rows:
+      name: Sum of viewers is less than the max observed
+      fail condition: sum_viewers < max_viewers
+
+  # Referential integrity (FK constraints)
+  - failed rows:
+      name: Facts without a matching game dimension
+      fail condition: game_id NOT IN (SELECT game_id FROM dim_game)
+      
+  - failed rows:
+      name: Facts without a matching date dimension
+      fail condition: date_id NOT IN (SELECT date_id FROM dim_date)
+      
+  - failed rows:
+      name: Facts without a matching streamer dimension
+      fail condition: streamer_id NOT IN (SELECT streamer_id FROM dim_streamer)
+      
+  - failed rows:
+      name: Facts without a matching language dimension
+      fail condition: language_id NOT IN (SELECT language_id FROM dim_language)

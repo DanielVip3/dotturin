@@ -1,0 +1,7 @@
+data_source clickhouse:
+  type: mysql
+  host: clickhouse
+  port: 9004
+  username: ${CLICKHOUSE_USER}
+  password: ${CLICKHOUSE_PASSWORD}
+  database: ${CLICKHOUSE_DB}

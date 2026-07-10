@@ -1,0 +1,34 @@
+checks for streams:
+  - row_count > 0:
+      name: Ensure streams data is arriving from bronze
+  - missing_count(stream_id) = 0:
+      name: Stream ID is the primary key and must exist
+  - missing_count(user_name) = 0
+  - missing_count(ingestion_ts) = 0
+  - missing_count(started_at) = 0
+  - min(viewer_count) >= 0:
+      name: Viewer count cannot be negative
+  - min(stream_time_seconds) >= 0:
+      name: Uptime logic must not yield negative seconds (started_at > ingestion_ts)
+  - min(started_hour) >= 0:
+      name: Started hour must be 0 or greater
+  - max(started_hour) <= 23:
+      name: Started hour must be 23 or less
+
+checks for stream_tags:
+  - missing_count(stream_id) = 0
+  - missing_count(tag_name) = 0
+
+checks for stream_transitions:
+  - missing_count(stream_id) = 0
+  - missing_count(event_ts) = 0
+  - invalid_count(event_type) = 0:
+      valid values: [GAME_CHANGE, TITLE_CHANGE]
+      name: Event types must be strictly categorical
+  - missing_count(new_value) = 0:
+      name: A transition must always have a new value
+
+checks for games:
+  - missing_count(game_id) = 0
+  - missing_count(game_name) = 0
+  # No checks for IGDB API data as the API specs are too vague
