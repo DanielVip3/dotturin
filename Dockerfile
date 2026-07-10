@@ -48,7 +48,8 @@ COPY --from=base /opt/spark/jars/ /opt/spark/jars/
 
 # Install Python requirements
 COPY requirements/spark.txt /tmp/requirements.txt
-RUN python3 -m pip install --no-cache-dir -r /tmp/requirements.txt
+RUN python3 -m pip install uv
+RUN uv pip install --system --no-cache-dir -r /tmp/requirements.txt
 
 
 
@@ -64,14 +65,17 @@ RUN apt-get update && \
   apt-get install -y openjdk-17-jre-headless && \
   apt-get clean
 
+USER airflow
+
 # Install Python requirements
 COPY requirements/airflow.txt /tmp/requirements.txt
-RUN python3 -m pip install --no-cache-dir -r /tmp/requirements.txt
+COPY requirements/airflow_nodeps.txt /tmp/requirements_nodeps.txt
+RUN pip install uv
+RUN uv pip install --python "$(which python)" --no-cache-dir --prerelease=allow -r /tmp/requirements.txt
+RUN uv pip install --python "$(which python)" --no-cache-dir --prerelease=allow --no-deps -r /tmp/requirements_nodeps.txt
 
 # Set environment variables
 ENV SPARK_HOME=/opt/spark
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PYTHONPATH=$SPARK_HOME/python:$PYTHONPATH
 ENV PATH=$SPARK_HOME/bin:$PATH
-
-USER airflow

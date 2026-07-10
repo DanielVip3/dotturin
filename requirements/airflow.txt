@@ -1,5 +1,8 @@
 requests
 confluent-kafka
 python-dotenv
-apache-airflow[apache-spark]
+apache-airflow-providers-apache-spark>=5.0.0
 delta-spark==4.0.1
+soda-core-spark-df
+mysql-connector-python==9.7.0
+pyspark==4.0.3

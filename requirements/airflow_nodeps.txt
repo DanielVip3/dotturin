@@ -1,0 +1,1 @@
+soda-core-mysql==3.5.6

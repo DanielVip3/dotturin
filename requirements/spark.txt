@@ -1,5 +1,7 @@
 python-dotenv
 delta-spark==4.0.1
-haversine==2.9.0
 pandas==2.3.3
 pyarrow>=16.0.0
+soda-core-spark-df
+soda-core-mysql
+pyspark==4.0.3

@@ -28,6 +28,7 @@ x-airflow-common:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
     - ./scripts:/opt/airflow/scripts
+    - ./soda:/opt/soda
   user: "${AIRFLOW_UID}:0"
   networks:
     - pipeline_net
@@ -166,6 +167,8 @@ services:
       target: spark
     container_name: spark-master
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    volumes:
+      - ./soda:/opt/soda
     environment:
       SPARK_MODE: 'master'
       SPARK_PUBLIC_DNS: 'spark-master'
@@ -185,6 +188,8 @@ services:
     depends_on:
       - spark-master
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    volumes:
+      - ./soda:/opt/soda
     environment:
       SPARK_MODE: 'worker'
       SPARK_PUBLIC_DNS: 'spark-worker'
@@ -233,6 +238,7 @@ services:
     ports:
       - "8123:8123"   # HTTP interface
       - "9005:9000"   # Native interface
+      - "9004:9004"   # MySQL emulation interface (used by Soda)
     environment:
       CLICKHOUSE_USER: ${CLICKHOUSE_USER}
       CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
