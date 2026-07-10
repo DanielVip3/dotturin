@@ -157,7 +157,7 @@ def main():
           callback=producer_callback,
         )
 
-      # TEMPORARY for testing [TODO: remove]
+      # Block until all messages are delivered to Kafka
       producer.flush()
 
   except Exception as e:
