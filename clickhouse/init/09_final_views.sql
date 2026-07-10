@@ -1,24 +1,24 @@
-CREATE VIEW IF NOT EXISTS dim_game_final AS
+CREATE VIEW IF NOT EXISTS twitch.dim_game_final AS
 SELECT *
-FROM dim_game
+FROM twitch.dim_game
 FINAL;
 
-CREATE VIEW IF NOT EXISTS dim_date_final AS
+CREATE VIEW IF NOT EXISTS twitch.dim_date_final AS
 SELECT *
-FROM dim_date
+FROM twitch.dim_date
 FINAL;
 
-CREATE VIEW IF NOT EXISTS dim_streamer_final AS
+CREATE VIEW IF NOT EXISTS twitch.dim_streamer_final AS
 SELECT *
-FROM dim_streamer
+FROM twitch.dim_streamer
 FINAL;
 
-CREATE VIEW IF NOT EXISTS dim_language_final AS
+CREATE VIEW IF NOT EXISTS twitch.dim_language_final AS
 SELECT *
-FROM dim_language
+FROM twitch.dim_language
 FINAL;
 
-CREATE VIEW IF NOT EXISTS fact_stream_hourly_final AS
+CREATE VIEW IF NOT EXISTS twitch.fact_stream_hourly_final AS
 SELECT *
-FROM fact_stream_hourly
+FROM twitch.fact_stream_hourly
 FINAL;
