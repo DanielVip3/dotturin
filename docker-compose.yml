@@ -53,6 +53,7 @@ services:
       retries: 5
     networks:
       - pipeline_net
+    restart: unless-stopped
  
   airflow-init:
     <<: *airflow-common
@@ -115,6 +116,7 @@ services:
     command: server /data --console-address ":9001"
     networks:
       - pipeline_net
+    restart: unless-stopped
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -140,6 +142,7 @@ services:
       - kafka_data:/var/lib/kafka/data
     networks:
       - pipeline_net
+    restart: unless-stopped
 
   # Init container to initialize Kafka topics before running consumer in Spark
   kafka-init-topics:
@@ -178,6 +181,7 @@ services:
       - "8081:8080"
     networks:
       - pipeline_net
+    restart: unless-stopped
 
   spark-worker:
     build:
@@ -204,6 +208,7 @@ services:
       - "8082:8081"
     networks:
       - pipeline_net
+    restart: unless-stopped
   
   # Init container to run bronze and silver jobs in Spark Streaming
   spark-stream-init:
@@ -228,9 +233,9 @@ services:
       TOPIC_GAMES: ${TOPIC_GAMES}
     working_dir: /app
     command: bash spark_submit_jobs.sh
-    restart: unless-stopped
     networks:
       - pipeline_net
+    restart: unless-stopped
   
   clickhouse:
     image: clickhouse/clickhouse-server:latest
@@ -252,6 +257,7 @@ services:
         hard: 262144
     networks:
       - pipeline_net
+    restart: unless-stopped
 
 volumes:
   minio_data:
