@@ -15,6 +15,7 @@ def gold_hourly_transformation():
   SparkSubmitOperator(
     task_id="run_gold",
     application="/opt/airflow/scripts/gold/clickhouse_hourly.py",
+    py_files="/opt/airflow/scripts/common.py",
     conn_id="spark_default",
     conf={"spark.cores.max": SPARK_APP_CORES},
     verbose=True,

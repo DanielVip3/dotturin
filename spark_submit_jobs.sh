@@ -16,7 +16,7 @@ SPARK_MASTER="spark://spark-master:7077"
 JOBS_DIR="/app/jobs"
 
 echo "[*] Starting bronze ingestion..."
-/opt/spark/bin/spark-submit --master $SPARK_MASTER --conf spark.cores.max=${SPARK_APP_CORES} --driver-memory 512m --executor-memory 512m $JOBS_DIR/bronze/consumer.py &
+/opt/spark/bin/spark-submit --master $SPARK_MASTER --conf spark.cores.max=${SPARK_APP_CORES} --driver-memory 512m --executor-memory 512m --py-files "$JOBS_DIR/common.py" $JOBS_DIR/bronze/consumer.py &
 BRONZE_PID=$!
 
 SILVER_JOBS=(
