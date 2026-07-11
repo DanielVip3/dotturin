@@ -158,7 +158,8 @@ Identical to bronze streams but with `tags` dropped (tags live in their own tabl
 | Column | Type | Notes |
 |---|---|---|
 | Everything from bronze streams except `tags`, `year`, `month`, `day` | | |
-| `started_year`, `started_month`, `started_day`, `started_hour` | int | Derived from `started_at` (not `ingestion_ts`), useful for grouping by when a stream actually began. |
+| `started_year`, `started_month`, `started_day`, `started_hour` | int | Derived from `started_at`, useful for grouping by when a stream actually began. |
+| `ingestion_hour` | int | Hour derived from `ingestion_ts`. |
 | `thumbnail_url_1080p` | string | `thumbnail_url` with the `{width}x{height}` placeholder resolved to `1920x1080`. Unused in the pipeline currently. |
 | `stream_time_seconds` | int | `ingestion_ts - started_at` in seconds, counting how long the stream has been running at the moment of this snapshot. |
 
@@ -303,9 +304,9 @@ Not all games have IGDB data available (therefore the IGDB fields can be null).
 | Column | Type | Notes |
 |---|---|---|
 | `date_id` | UInt32 | Formatted as `YYYYMMDD` (e.g. `20260707`) |
-| `date_year` | UInt16 | |
-| `date_month` | UInt8 | |
-| `date_day` | UInt8 | |
+| `date_year` | UInt16 | Year of ingestion of the data. |
+| `date_month` | UInt8 | Month of ingestion of the data. |
+| `date_day` | UInt8 | Day of ingestion of the data. |
 | `inserted_at` | DateTime | Defaults to `now()`. |
 
 ### `dim_streamer`
@@ -334,7 +335,7 @@ Not all games have IGDB data available (therefore the IGDB fields can be null).
 | `date_id` | Foreign key to `dim_date`. |
 | `streamer_id` | Foreign key to `dim_streamer`. |
 | `language_id` | Foreign key to `dim_language`. |
-| `time_hour` | Degenerate dimension (0–23), no full dimension table. |
+| `time_hour` | Degenerate dimension. Hour of ingestion of the data (0–23). |
 | `max_viewers` | Max `viewer_count` observed in this hour bucket. |
 | `sum_viewers` | Sum of `viewer_count` across all polls in the bucket (divide by `count_observations` to get an average). |
 | `count_observations` | Number of polls that fell into this bucket; if the service is running correctly, this field should be 60 (one per minute in an hour). |

@@ -1,7 +1,7 @@
 from common import get_spark_session
 import os
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, max, sum, count, expr, concat, lpad
+from pyspark.sql.functions import col, max, sum, count, expr, concat, lpad, hour
 
 # Initialize Spark session
 spark = get_spark_session("TwitchNoNameGoldHourly")
@@ -72,9 +72,9 @@ def process_gold(batch_df: DataFrame, _: int):
   # Date dimension table
   dim_date_df = (
     batch_df.select(
-      col("started_year").alias("date_year"),
-      col("started_month").alias("date_month"),
-      col("started_day").alias("date_day"),
+      col("year").alias("date_year"),
+      col("month").alias("date_month"),
+      col("day").alias("date_day"),
     )
     .distinct()
     .withColumn(
@@ -95,9 +95,9 @@ def process_gold(batch_df: DataFrame, _: int):
     .withColumn(
       "date_id",
       concat(
-        col("started_year"),
-        lpad(col("started_month"), 2, "0"),
-        lpad(col("started_day"), 2, "0"),
+        col("year"),
+        lpad(col("month"), 2, "0"),
+        lpad(col("day"), 2, "0"),
       ).cast("long"),
     )
     .groupBy(
@@ -105,7 +105,7 @@ def process_gold(batch_df: DataFrame, _: int):
       "streamer_id",
       "language_id",
       "date_id",
-      col("started_hour").alias("time_hour"),
+      col("ingestion_hour").alias("time_hour"),
     )
     .agg(
       max("viewer_count").alias("max_viewers"),

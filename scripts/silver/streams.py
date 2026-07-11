@@ -22,6 +22,7 @@ enriched_df = (
   .withColumn("started_month", month(col("started_at")))
   .withColumn("started_day", day(col("started_at")))
   .withColumn("started_hour", hour(col("started_at")))
+  .withColumn("ingestion_hour", hour(col("ingestion_ts")))
   .withColumn(
     "thumbnail_url_1080p",
     regexp_replace(col("thumbnail_url"), "\\{width\\}x\\{height\\}", "1920x1080"),
