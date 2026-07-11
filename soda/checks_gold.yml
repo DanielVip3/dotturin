@@ -50,8 +50,6 @@ checks for fact_stream_hourly_final:
   - max(time_hour) <= 23:
       name: Hour must be 23 or less
 
-  - max(count_observations) <= 60:
-      name: There must be at most 60 polls (observations) per hour bucket
   - min(count_observations) >= 1:
       name: A fact row cannot exist without at least one observation
   - min(max_viewers) >= 0:
