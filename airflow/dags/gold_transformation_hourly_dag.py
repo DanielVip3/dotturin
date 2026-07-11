@@ -1,4 +1,4 @@
-from common import SPARK_APP_CORES, start_date, default_args
+from common import SPARK_APP_CORES, SPARK_APP_MEMORY, SPARK_NUM_PARTITIONS, start_date, default_args
 from airflow.sdk import dag
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
@@ -20,7 +20,12 @@ def gold_hourly_transformation():
     application="/opt/airflow/scripts/silver/validate.py",
     py_files="/opt/airflow/scripts/common.py",
     conn_id="spark_default",
-    conf={"spark.cores.max": SPARK_APP_CORES},
+    conf={
+      "spark.cores.max": SPARK_APP_CORES,
+      "spark.driver.memory": SPARK_APP_MEMORY,
+      "spark.executor.memory": SPARK_APP_MEMORY,
+      "spark.sql.shuffle.partitions": SPARK_NUM_PARTITIONS,
+    },
     verbose=True,
   )
 
@@ -30,7 +35,12 @@ def gold_hourly_transformation():
     application="/opt/airflow/scripts/gold/clickhouse_hourly.py",
     py_files="/opt/airflow/scripts/common.py",
     conn_id="spark_default",
-    conf={"spark.cores.max": SPARK_APP_CORES},
+    conf={
+      "spark.cores.max": SPARK_APP_CORES,
+      "spark.driver.memory": SPARK_APP_MEMORY,
+      "spark.executor.memory": SPARK_APP_MEMORY,
+      "spark.sql.shuffle.partitions": SPARK_NUM_PARTITIONS,
+    },
     verbose=True,
   )
 

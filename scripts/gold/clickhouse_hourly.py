@@ -1,10 +1,11 @@
 from common import get_spark_session
 import os
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, max, sum, count, expr, concat, lpad, hour
+from pyspark.sql.functions import col, max, sum, count, expr, concat, lpad
 
 # Initialize Spark session
 spark = get_spark_session("TwitchNoNameGoldHourly")
+spark.conf.set("spark.sql.shuffle.partitions", int(os.environ.get("SPARK_NUM_PARTITIONS")))
 
 CH_HOST = "clickhouse"
 CH_PORT = "8123"
@@ -13,7 +14,9 @@ CH_PASSWORD = os.environ.get("CLICKHOUSE_PASSWORD")
 CH_DB = os.environ.get("CLICKHOUSE_DB")
 
 # Read data from silver layer streams Delta Lake
-silver_streams_df = spark.readStream.format("delta").load("s3a://twitch-silver/streams")
+silver_streams_df = (
+  spark.readStream.format("delta").option("maxBytesPerTrigger", 1000 * 1000).load("s3a://twitch-silver/streams")
+)
 
 # Read games as a static DF to join later
 silver_games_df = spark.read.format("delta").load("s3a://twitch-silver/games")
