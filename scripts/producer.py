@@ -1,18 +1,13 @@
+from common import STREAM_AVRO_SCHEMA, GAME_AVRO_SCHEMA, TOPIC_STREAMS, TOPIC_GAMES
 from dotenv import load_dotenv
 import os
 import requests
-import json
 from confluent_kafka import Producer
+from confluent_kafka.serialization import StringSerializer, SerializationContext, MessageField
+from confluent_kafka.schema_registry import SchemaRegistryClient
+from confluent_kafka.schema_registry.avro import AvroSerializer
 
 load_dotenv()
-
-config = {
-  "bootstrap.servers": "kafka:29092",
-  "client.id": "twitch-producer",
-  "message.max.bytes": 10485760,
-}
-
-producer = Producer(config)
 
 CLIENT_ID = os.environ.get("TWITCH_CLIENT_ID")
 CLIENT_SECRET = os.environ.get("TWITCH_CLIENT_SECRET")
@@ -21,6 +16,20 @@ OAUTH_URL = "https://id.twitch.tv/oauth2/token"
 API_STREAMS_URL = "https://api.twitch.tv/helix/streams?first=100"
 API_GAMES_URL = "https://api.twitch.tv/helix/games"
 API_IGDB_GAMES_URL = "https://api.igdb.com/v4/games"
+
+sr_client = SchemaRegistryClient({"url": "http://schema-registry:8081"})
+
+stream_avro_serializer = AvroSerializer(sr_client, STREAM_AVRO_SCHEMA)
+game_avro_serializer = AvroSerializer(sr_client, GAME_AVRO_SCHEMA)
+string_serializer = StringSerializer("utf_8")
+
+producer = Producer(
+  {
+    "bootstrap.servers": "kafka:29092",
+    "client.id": "twitch-producer",
+    "message.max.bytes": 10485760,
+  }
+)
 
 
 def producer_callback(err, msg):
@@ -132,30 +141,32 @@ def main():
     print("\n[*] Fetching top streams...")
     data = fetch_top_streams(token)
 
-    if data is not None:
-      payload = json.dumps(data)
+    if data is not None and "data" in data:
+      stream_list = data["data"]
 
-      producer.produce(
-        topic=os.environ.get("TOPIC_STREAMS"),
-        value=payload.encode("utf-8"),
-        callback=producer_callback,
-      )
+      # Produce each stream individually
+      for stream in stream_list:
+        producer.produce(
+          topic=TOPIC_STREAMS,
+          key=string_serializer(str(stream["id"])),
+          value=stream_avro_serializer(stream, SerializationContext(TOPIC_STREAMS, MessageField.VALUE)),
+          callback=producer_callback,
+        )
 
-      stream_list = data.get("data", [])
       unique_game_ids = list({stream["game_id"] for stream in stream_list if stream.get("game_id")})
 
       print(f"[*] Fetching metadata for {len(unique_game_ids)} unique games...")
       games_data = fetch_games_and_igdb(token, unique_game_ids)
 
       if games_data:
-        # Wrap in a "data" key to maintain consistency with Twitch API format
-        games_payload = json.dumps({"data": games_data})
-
-        producer.produce(
-          topic=os.environ.get("TOPIC_GAMES"),
-          value=games_payload.encode("utf-8"),
-          callback=producer_callback,
-        )
+        # Produce each game individually
+        for game in games_data:
+          producer.produce(
+            topic=TOPIC_GAMES,
+            key=string_serializer(str(game["id"])),
+            value=game_avro_serializer(game, SerializationContext(TOPIC_GAMES, MessageField.VALUE)),
+            callback=producer_callback,
+          )
 
       # Block until all messages are delivered to Kafka
       producer.flush()

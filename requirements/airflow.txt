@@ -1,5 +1,6 @@
 requests
 confluent-kafka
+confluent_kafka[avro]
 python-dotenv
 apache-airflow-providers-apache-spark>=5.0.0
 delta-spark==4.0.1

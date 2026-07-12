@@ -75,7 +75,7 @@ MinIO has to already be up for Terraform to talk to it, so run:
    make tf-apply
    ```
 
-3. **Start the entire pipeline.** Run `make up`. Postgres will start, then Airflow will be initialized (with your credentials) and started; Kafka will be started as well and topics will be automatically created. ClickHouse will run and the `clickhouse/init/*.sql` scripts will be executed to initialize the database schema. Lastly, Spark will start the bronze and silver streaming jobs.
+3. **Start the entire pipeline.** Run `make up`. Postgres will start, then Airflow will be initialized (with your credentials) and started; Kafka will be started as well along with schema registry, and topics will be automatically created. ClickHouse will run and the `clickhouse/init/*.sql` scripts will be executed to initialize the database schema. Lastly, Spark will start the bronze and silver streaming jobs.
 
 4. **Install the local dependencies.** Run in Powershell:
    ```powershell
@@ -126,6 +126,7 @@ Apart from the obvious containers which stay running, that include **Spark maste
 | ClickHouse HTTP | [http://localhost:8123](http://localhost:8123) | |
 | ClickHouse native | localhost:9005 | |
 | Kafka | localhost:9092 | External listener; internal is `kafka:29092` |
+| Confluent Schema Registry | localhost:8085 | External listener; internal is `schema-registry:8081` |
 
 Airflow and MinIO web UIs will ask for authentication; the credentials are in your `.env` file.
 

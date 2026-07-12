@@ -144,12 +144,29 @@ services:
     networks:
       - pipeline_net
     restart: unless-stopped
+  
+  schema-registry:
+    image: confluentinc/cp-schema-registry:latest
+    container_name: schema-registry
+    ports:
+      - "8085:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka:29092'
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+    networks:
+      - pipeline_net
+    depends_on:
+      - kafka
+    restart: unless-stopped
 
   # Init container to initialize Kafka topics before running consumer in Spark
   kafka-init-topics:
     image: confluentinc/cp-kafka:latest
     depends_on:
       kafka:
+        condition: service_started
+      schema-registry:
         condition: service_started
     command: >
       /bin/bash -c "
@@ -223,6 +240,7 @@ services:
       - spark-master
       - spark-worker
       - kafka
+      - schema-registry
       - kafka-init-topics
       - minio
     volumes:

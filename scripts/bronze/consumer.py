@@ -1,11 +1,12 @@
 from common import (
   get_spark_session,
-  stream_schema,
-  game_schema,
+  STREAM_AVRO_SCHEMA,
+  GAME_AVRO_SCHEMA,
   TOPIC_STREAMS,
   TOPIC_GAMES,
 )
-from pyspark.sql.functions import col, from_json, explode, year, month, day
+from pyspark.sql.functions import col, expr, year, month, day, to_timestamp
+from pyspark.sql.avro.functions import from_avro
 
 # Initialize Spark session
 spark = get_spark_session("TwitchNoNameStreamingConsumerBronze", master="spark://spark-master:7077")
@@ -21,25 +22,22 @@ kafka_streams_df = (
   .load()
 )
 
-# Parse JSON and explode the stream data array as rows into the main table
-exploded_streams_df = (
-  kafka_streams_df.selectExpr("CAST(value AS STRING) as json_payload", "timestamp as ingestion_ts")
-  .withColumn("parsed_json", from_json(col("json_payload"), stream_schema))
-  .withColumn("stream", explode(col("parsed_json.data")))
-)
-
-# Select all the stream columns and the ingestion timestamp
-bronze_streams_df = exploded_streams_df.select(
-  col("ingestion_ts"),
-  col("stream.id").alias("stream_id"),
-  col("stream.user_name"),
-  col("stream.game_name"),  # can be an empty string
-  col("stream.title"),  # can be an empty string
-  col("stream.tags"),
-  col("stream.viewer_count"),
-  col("stream.started_at"),
-  col("stream.language"),  # ISO 639-1 language code or "other"
-  col("stream.thumbnail_url"),
+# Strip the  Confluent header (5 bytes), deserialize Avro and select all the stream columns and the ingestion timestamp
+bronze_streams_df = (
+  kafka_streams_df.withColumn("fixed_value", expr("substring(value, 6, length(value)-5)"))
+  .withColumn("stream", from_avro(col("fixed_value"), STREAM_AVRO_SCHEMA))
+  .select(
+    col("timestamp").alias("ingestion_ts"),
+    col("stream.id").alias("stream_id"),
+    col("stream.user_name"),
+    col("stream.game_name"),
+    col("stream.title"),
+    col("stream.tags"),
+    col("stream.viewer_count"),
+    to_timestamp(col("stream.started_at")).alias("started_at"),
+    col("stream.language"),
+    col("stream.thumbnail_url"),
+  )
 )
 
 # Extraction of ingestion year, month and day columns to partition later
@@ -69,21 +67,17 @@ kafka_games_df = (
   .load()
 )
 
-# Parse JSON and explode
-exploded_games_df = (
-  kafka_games_df.selectExpr("CAST(value AS STRING) as json_payload", "timestamp as ingestion_ts")
-  .withColumn("parsed_json", from_json(col("json_payload"), game_schema))
-  .withColumn("game", explode(col("parsed_json.data")))
-)
-
-# Select high-level columns and keep the entire IGDB data struct raw and nested
-bronze_games_df = exploded_games_df.select(
-  col("ingestion_ts"),
-  col("json_payload").alias("raw_payload"),  # useful for future access to data discarded by silver layer
-  col("game.id").alias("game_id"),
-  col("game.name").alias("game_name"),
-  col("game.igdb_id"),
-  col("game.igdb_data"),
+# Strip the Confluent header (5 bytes), deserialize Avro, select high-level columns and keep the entire IGDB data struct raw and nested
+bronze_games_df = (
+  kafka_games_df.withColumn("fixed_value", expr("substring(value, 6, length(value)-5)"))
+  .withColumn("game", from_avro(col("fixed_value"), GAME_AVRO_SCHEMA))
+  .select(
+    col("timestamp").alias("ingestion_ts"),
+    col("game.id").alias("game_id"),
+    col("game.name").alias("game_name"),
+    col("game.igdb_id"),
+    col("game.igdb_data"),
+  )
 )
 
 # Write stream in Delta Lake format in bucket 'twitch-bronze' (not partitioned)

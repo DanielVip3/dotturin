@@ -1,16 +1,7 @@
 import os
 from dotenv import load_dotenv
+import json
 from pyspark.sql import SparkSession
-from pyspark.sql.types import (
-  StructType,
-  StructField,
-  StringType,
-  IntegerType,
-  TimestampType,
-  ArrayType,
-  DoubleType,
-  LongType,
-)
 
 load_dotenv()
 
@@ -54,75 +45,89 @@ def get_spark_session(app_name: str, master: str | None = None) -> SparkSession:
 
 
 # Twitch stream API schema
-stream_schema = StructType(
-  [
-    StructField(
-      "data",
-      ArrayType(
-        StructType(
-          [
-            StructField("id", StringType()),
-            StructField("user_name", StringType()),
-            StructField("game_name", StringType()),
-            StructField("title", StringType()),
-            StructField("tags", ArrayType(StringType())),
-            StructField("viewer_count", IntegerType()),
-            StructField("started_at", TimestampType()),
-            StructField("language", StringType()),
-            StructField("thumbnail_url", StringType()),
-          ]
-        )
-      ),
-    )
-  ]
-)
+STREAM_AVRO_SCHEMA_DICT = {
+  "type": "record",
+  "name": "Stream",
+  "fields": [
+    {"name": "id", "type": "string"},
+    {"name": "user_name", "type": "string"},
+    {"name": "game_name", "type": "string"},
+    {"name": "title", "type": "string"},
+    {"name": "tags", "type": ["null", {"type": "array", "items": "string"}], "default": None},
+    {"name": "viewer_count", "type": "int"},
+    {"name": "started_at", "type": "string"},
+    {"name": "language", "type": "string"},
+    {"name": "thumbnail_url", "type": "string"},
+  ],
+}
 
-# Twitch game API schema
-id_name_struct = StructType([StructField("id", IntegerType()), StructField("name", StringType())])
+# Twitch game API schema + IGDB game metadata schema
+GAME_AVRO_SCHEMA_DICT = {
+  "type": "record",
+  "name": "Game",
+  "fields": [
+    {"name": "id", "type": "string"},
+    {"name": "name", "type": "string"},
+    {"name": "igdb_id", "type": ["null", "string"], "default": None},
+    {
+      "name": "igdb_data",
+      "type": [
+        "null",
+        {
+          "type": "record",
+          "name": "IgdbData",
+          "fields": [
+            {"name": "id", "type": ["null", "int"], "default": None},
+            {"name": "summary", "type": ["null", "string"], "default": None},
+            {"name": "total_rating", "type": ["null", "double"], "default": None},
+            {"name": "total_rating_count", "type": ["null", "int"], "default": None},
+            {"name": "first_release_date", "type": ["null", "long"], "default": None},
+            {"name": "storyline", "type": ["null", "string"], "default": None},
+            {"name": "url", "type": ["null", "string"], "default": None},
+            {
+              "name": "themes",
+              "type": [
+                "null",
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "record",
+                    "name": "IdName",
+                    "fields": [{"name": "id", "type": "int"}, {"name": "name", "type": "string"}],
+                  },
+                },
+              ],
+              "default": None,
+            },
+            {"name": "player_perspectives", "type": ["null", {"type": "array", "items": "IdName"}], "default": None},
+            {"name": "keywords", "type": ["null", {"type": "array", "items": "IdName"}], "default": None},
+            {"name": "game_modes", "type": ["null", {"type": "array", "items": "IdName"}], "default": None},
+            {
+              "name": "platforms",
+              "type": [
+                "null",
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "record",
+                    "name": "Platform",
+                    "fields": [
+                      {"name": "name", "type": "string"},
+                      {"name": "platform_family", "type": ["null", "IdName"], "default": None},
+                      {"name": "platform_type", "type": ["null", "IdName"], "default": None},
+                    ],
+                  },
+                },
+              ],
+              "default": None,
+            },
+          ],
+        },
+      ],
+      "default": None,
+    },
+  ],
+}
 
-game_schema = StructType(
-  [
-    StructField(
-      "data",
-      ArrayType(
-        StructType(
-          [
-            StructField("id", StringType()),
-            StructField("name", StringType()),
-            StructField("igdb_id", StringType()),
-            StructField(
-              "igdb_data",
-              StructType(
-                [
-                  StructField("id", IntegerType()),
-                  StructField("summary", StringType()),
-                  StructField("total_rating", DoubleType()),
-                  StructField("total_rating_count", IntegerType()),
-                  StructField("first_release_date", LongType()),  # Unix timestamp
-                  StructField("storyline", StringType()),
-                  StructField("url", StringType()),
-                  StructField("themes", ArrayType(id_name_struct)),
-                  StructField("player_perspectives", ArrayType(id_name_struct)),
-                  StructField("keywords", ArrayType(id_name_struct)),
-                  StructField("game_modes", ArrayType(id_name_struct)),
-                  StructField(
-                    "platforms",
-                    ArrayType(
-                      StructType(
-                        [
-                          StructField("name", StringType()),
-                          StructField("platform_family", id_name_struct),
-                          StructField("platform_type", id_name_struct),
-                        ]
-                      )
-                    ),
-                  ),
-                ]
-              ),
-            ),
-          ]
-        )
-      ),
-    )
-  ]
-)
+STREAM_AVRO_SCHEMA = json.dumps(STREAM_AVRO_SCHEMA_DICT)
+GAME_AVRO_SCHEMA = json.dumps(GAME_AVRO_SCHEMA_DICT)
