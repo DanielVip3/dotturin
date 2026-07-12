@@ -22,6 +22,6 @@ def streams_kpis(streams: pl.DataFrame, latest: pl.DataFrame):
     )
 
     col4.metric(
-      "Avg viewers/stream (among top 100)",
-      f"{latest['viewer_count'].mean():.0f}" if not latest.is_empty() else 0,
+      "Median viewers (among top 100)",
+      f"{latest['viewer_count'].median():.0f}" if not latest.is_empty() else 0,
     )
