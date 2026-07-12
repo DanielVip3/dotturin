@@ -1,0 +1,126 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 658,
+            "y": 583
+          },
+          "nodeIndex": "dim_date",
+          "nodeLineageTag": "32287f92-665a-46bb-b2c7-cc4cebfba5f4",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 308,
+            "y": 226
+          },
+          "nodeIndex": "dim_game",
+          "nodeLineageTag": "ca508df2-81d7-4440-b90b-8c6b1522c9fa",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 661,
+            "y": 0
+          },
+          "nodeIndex": "dim_language",
+          "nodeLineageTag": "c24fc8bf-c457-4b00-8794-ac835df94d8b",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 1045,
+            "y": 337
+          },
+          "nodeIndex": "dim_streamer",
+          "nodeLineageTag": "6ce79e1c-d961-434b-879d-41e22b3a3ed8",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 659.79999542236328,
+            "y": 226
+          },
+          "nodeIndex": "fact_stream_hourly",
+          "nodeLineageTag": "d8307056-f0ec-493a-a468-4b3551b1875c",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 307,
+            "y": 603.5
+          },
+          "nodeIndex": "game_themes",
+          "nodeLineageTag": "bd71dd34-8f3b-4537-88ab-2ea05889325d",
+          "size": {
+            "height": 145,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 292.5
+          },
+          "nodeIndex": "game_keywords",
+          "nodeLineageTag": "b7086865-a988-4108-a603-fd961ae879cd",
+          "size": {
+            "height": 145,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 306,
+            "y": 41.5
+          },
+          "nodeIndex": "game_platforms",
+          "nodeLineageTag": "3d1bb845-24dc-4012-9f70-44505b8c9a97",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 1
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

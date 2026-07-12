@@ -1,0 +1,78 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "511b71ac3d5193b935cf",
+  "position": {
+    "x": 953,
+    "y": 22,
+    "z": 7000,
+    "height": 108,
+    "width": 261,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "kpi",
+    "query": {
+      "queryState": {
+        "Indicator": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "fact_stream_hourly"
+                        }
+                      },
+                      "Property": "sum_viewers"
+                    }
+                  },
+                  "Function": 1
+                }
+              },
+              "queryRef": "Sum(fact_stream_hourly.sum_viewers)",
+              "nativeQueryRef": "Average of sum_viewers",
+              "displayName": "Average viewers per game"
+            }
+          ]
+        },
+        "TrendLine": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_stream_hourly"
+                    }
+                  },
+                  "Property": "time_hour"
+                }
+              },
+              "queryRef": "fact_stream_hourly.time_hour",
+              "nativeQueryRef": "hour",
+              "displayName": "hour"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Average n. of viewers in last hour'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

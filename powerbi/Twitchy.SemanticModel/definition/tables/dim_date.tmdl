@@ -1,0 +1,78 @@
+table dim_date
+	lineageTag: 32287f92-665a-46bb-b2c7-cc4cebfba5f4
+
+	column date_id
+		dataType: double
+		isNullable: false
+		sourceProviderType: decimal(20, 0)
+		lineageTag: b626b559-f879-4680-bbcb-1f651fdcff78
+		summarizeBy: none
+		sourceColumn: date_id
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column date_year
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: b378baea-3358-4b6d-bbdc-2c7ee80341ef
+		summarizeBy: none
+		sourceColumn: date_year
+
+		annotation SummarizationSetBy = User
+
+	column date_month
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: double
+		lineageTag: b17488bd-cc2f-437c-b4ce-4edc5acfe35b
+		summarizeBy: none
+		sourceColumn: date_month
+
+		annotation SummarizationSetBy = User
+
+	column date_day
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: double
+		lineageTag: 3ed695e3-4c5d-42f0-a1cc-d89976038c35
+		summarizeBy: none
+		sourceColumn: date_day
+
+		annotation SummarizationSetBy = User
+
+	column inserted_at
+		dataType: dateTime
+		isNullable: false
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: 01c2acd7-938d-4ed8-920b-ef151c5f360f
+		summarizeBy: none
+		sourceColumn: inserted_at
+
+		variation Variation
+			isDefault
+			relationship: 1605c8f1-4445-436a-9ab6-015bd8067428
+			defaultHierarchy: LocalDateTable_eb0a013f-3689-4933-87d7-698c691a194e.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_date = m
+		mode: import
+		source =
+				let
+				    Source = ClickHouse.Database("localhost", 8123, "twitch", []),
+				    twitch_Database = Source{[Name="twitch",Kind="Database"]}[Data],
+				    dim_date_Table = twitch_Database{[Name="dim_date_final",Kind="Table"]}[Data]
+				in
+				    dim_date_Table
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

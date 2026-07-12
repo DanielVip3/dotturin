@@ -1,0 +1,54 @@
+table dim_streamer
+	lineageTag: 6ce79e1c-d961-434b-879d-41e22b3a3ed8
+
+	column streamer_id
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 9e91c19a-d5bd-4ae4-93a2-227b804a3014
+		summarizeBy: none
+		sourceColumn: streamer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column user_name
+		dataType: string
+		isNullable: false
+		sourceProviderType: nvarchar(16777215)
+		lineageTag: f9c6735a-90b0-48d5-9de7-ea1390052a44
+		summarizeBy: none
+		sourceColumn: user_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column inserted_at
+		dataType: dateTime
+		isNullable: false
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: b0a6f02f-a150-467d-bb19-cd1a3bfc58d4
+		summarizeBy: none
+		sourceColumn: inserted_at
+
+		variation Variation
+			isDefault
+			relationship: dc688be7-7ea4-485b-82c6-2dfae3b5e832
+			defaultHierarchy: LocalDateTable_087fa149-d090-4ef3-8e30-2726993db03f.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_streamer = m
+		mode: import
+		source =
+				let
+				    Source = ClickHouse.Database("localhost", 8123, "twitch", []),
+				    twitch_Database = Source{[Name="twitch",Kind="Database"]}[Data],
+				    dim_streamer_Table = twitch_Database{[Name="dim_streamer_final",Kind="Table"]}[Data]
+				in
+				    dim_streamer_Table
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

@@ -1,0 +1,37 @@
+table game_themes
+	lineageTag: bd71dd34-8f3b-4537-88ab-2ea05889325d
+
+	column game_id
+		dataType: int64
+		formatString: 0
+		lineageTag: f075da78-4cfd-4bc4-bd57-42ef24fa19ce
+		summarizeBy: none
+		sourceColumn: game_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column themes
+		dataType: string
+		lineageTag: 7d166940-8865-4d00-939d-d0f50fa71b48
+		summarizeBy: none
+		sourceColumn: themes
+
+		annotation SummarizationSetBy = Automatic
+
+	partition game_themes = m
+		mode: import
+		source =
+				let
+				    Source = dim_game,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"game_id", "themes"}),
+				    #"Expanded themes" = Table.ExpandListColumn(#"Removed Other Columns", "themes"),
+				    #"Removed Duplicates" = Table.Distinct(#"Expanded themes"),
+				    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Removed Duplicates", {"themes"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Errors", each ([themes] <> null))
+				in
+				    #"Filtered Rows"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

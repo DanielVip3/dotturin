@@ -1,0 +1,38 @@
+table game_keywords
+	lineageTag: b7086865-a988-4108-a603-fd961ae879cd
+
+	column game_id
+		dataType: int64
+		formatString: 0
+		lineageTag: f8cc4235-5667-4043-b761-e3ab2d4e4ed6
+		summarizeBy: none
+		sourceColumn: game_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column keywords
+		dataType: string
+		lineageTag: 3d285f5b-7d95-4557-800b-ba2a7ec1c30d
+		summarizeBy: none
+		sourceColumn: keywords
+
+		annotation SummarizationSetBy = Automatic
+
+	partition game_keywords = m
+		mode: import
+		source =
+				let
+				    Source = dim_game,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"keywords", "game_id"}),
+				    #"Reordered Columns" = Table.ReorderColumns(#"Removed Other Columns",{"game_id", "keywords"}),
+				    #"Expanded keywords" = Table.ExpandListColumn(#"Reordered Columns", "keywords"),
+				    #"Removed Duplicates" = Table.Distinct(#"Expanded keywords"),
+				    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Removed Duplicates", {"keywords", "game_id"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Errors", each ([keywords] <> null))
+				in
+				    #"Filtered Rows"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

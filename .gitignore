@@ -19,6 +19,10 @@ plugins/
 # Python virtual env
 .venv/
 
+# Power BI
+.pbi/
+*.json.artifact
+
 __pycache__
 .docker_volumes/
 minio_data/

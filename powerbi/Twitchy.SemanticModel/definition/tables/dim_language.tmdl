@@ -1,0 +1,54 @@
+table dim_language
+	lineageTag: c24fc8bf-c457-4b00-8794-ac835df94d8b
+
+	column language_id
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: d3ce6f25-50a2-4a7b-8b9b-2fd8b98cc00a
+		summarizeBy: none
+		sourceColumn: language_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column language
+		dataType: string
+		isNullable: false
+		sourceProviderType: nvarchar(16777215)
+		lineageTag: fd42e240-c7df-402f-bae4-2a0aa8ae5325
+		summarizeBy: none
+		sourceColumn: language
+
+		annotation SummarizationSetBy = Automatic
+
+	column inserted_at
+		dataType: dateTime
+		isNullable: false
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: eca956bf-94d3-4ce2-8b81-e848d92ecbfc
+		summarizeBy: none
+		sourceColumn: inserted_at
+
+		variation Variation
+			isDefault
+			relationship: 0a7aa843-2d02-4871-98e6-3c2a14a692c4
+			defaultHierarchy: LocalDateTable_4d27c351-4159-4efc-a37c-143741566729.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_language = m
+		mode: import
+		source =
+				let
+				    Source = ClickHouse.Database("localhost", 8123, "twitch", []),
+				    twitch_Database = Source{[Name="twitch",Kind="Database"]}[Data],
+				    dim_language_Table = twitch_Database{[Name="dim_language_final",Kind="Table"]}[Data]
+				in
+				    dim_language_Table
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

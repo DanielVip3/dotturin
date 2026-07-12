@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Twitchy"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "93e7e3bd-cd5f-4e87-b576-e61d454da73a"
+  }
+}

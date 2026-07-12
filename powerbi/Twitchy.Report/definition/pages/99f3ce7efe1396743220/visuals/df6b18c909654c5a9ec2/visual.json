@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "df6b18c909654c5a9ec2",
+  "position": {
+    "x": 1261.6084623433228,
+    "y": 273.91528362821322,
+    "z": 2000,
+    "height": 70.681216001384286,
+    "width": 198.72689716331232,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_game"
+                    }
+                  },
+                  "Property": "game_name"
+                }
+              },
+              "queryRef": "dim_game.game_name",
+              "nativeQueryRef": "Game",
+              "active": true,
+              "displayName": "Game"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Dropdown'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "syncGroup": {
+      "groupName": "game_name",
+      "fieldChanges": true,
+      "filterChanges": true
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

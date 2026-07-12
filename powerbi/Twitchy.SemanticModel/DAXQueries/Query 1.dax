@@ -1,0 +1,4 @@
+Today_Viewers_Hourly = 
+VAR TodayKey = (YEAR(TODAY()) * 10000) + (MONTH(TODAY()) * 100) + DAY(TODAY())
+RETURN
+CALCULATE(SUM('fact_stream_hourly'[viewers]), 'fact_stream_hourly'[date_id] = TodayKey)

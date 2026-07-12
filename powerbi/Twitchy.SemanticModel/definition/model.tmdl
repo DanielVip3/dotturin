@@ -1,0 +1,33 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: it-IT
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["dim_game","dim_language","dim_date","dim_streamer","fact_stream_hourly","game_themes","game_keywords","game_platforms"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table dim_game
+ref table dim_language
+ref table dim_date
+ref table dim_streamer
+ref table fact_stream_hourly
+ref table DateTableTemplate_1c071904-b8a5-4dab-9578-882080cc0946
+ref table LocalDateTable_08a81c54-1133-4d28-afe6-4a050417ec9e
+ref table LocalDateTable_f23d5e88-5f1d-4c02-8c24-cdab2761491d
+ref table LocalDateTable_4d27c351-4159-4efc-a37c-143741566729
+ref table LocalDateTable_eb0a013f-3689-4933-87d7-698c691a194e
+ref table LocalDateTable_087fa149-d090-4ef3-8e30-2726993db03f
+ref table LocalDateTable_058d749e-0319-4049-ae22-43e664c61efe
+ref table LocalDateTable_3b872e8f-1e7f-447f-857d-263c1a82e1bf
+ref table game_themes
+ref table game_keywords
+ref table game_platforms
+
+ref cultureInfo en-US
+

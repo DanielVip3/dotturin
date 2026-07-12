@@ -1,0 +1,151 @@
+table fact_stream_hourly
+	lineageTag: d8307056-f0ec-493a-a468-4b3551b1875c
+
+	measure avg_viewers = DIVIDE(SUM(fact_stream_hourly[sum_viewers]), SUM(fact_stream_hourly[count_observations]))
+		lineageTag: 7bfedc3e-053b-41d2-bdbb-59f7adea1c7b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure distinct_streamers = DISTINCTCOUNT('fact_stream_hourly'[streamer_id])
+		formatString: 0
+		lineageTag: c402e669-c518-4146-99d4-763b164a7062
+
+	measure hours_online = DIVIDE(SUM(fact_stream_hourly[count_observations]), 60)
+		lineageTag: 08359154-61ec-43f8-8a2d-38a64f76b92d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column date_id
+		dataType: double
+		isNullable: false
+		sourceProviderType: decimal(20, 0)
+		lineageTag: 98e99603-a16c-4096-aaa7-293e3d8af99b
+		summarizeBy: none
+		sourceColumn: date_id
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column time_hour
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: double
+		lineageTag: d7c1e166-f220-46b5-a689-07138ceac5e1
+		summarizeBy: none
+		sourceColumn: time_hour
+
+		annotation SummarizationSetBy = User
+
+	column game_id
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 6d49d029-3bd3-49d0-9230-2a895615e96f
+		summarizeBy: none
+		sourceColumn: game_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column streamer_id
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 489b19bf-2c1f-4ea6-9a11-3d063e7e05bc
+		summarizeBy: none
+		sourceColumn: streamer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column language_id
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 6cf522be-876c-4502-ae28-d51e3b23f993
+		summarizeBy: none
+		sourceColumn: language_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column max_viewers
+		dataType: double
+		isNullable: false
+		sourceProviderType: decimal(20, 0)
+		lineageTag: a2394629-54fa-4ddd-9be6-916bbbd57115
+		summarizeBy: sum
+		sourceColumn: max_viewers
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column sum_viewers
+		dataType: double
+		isNullable: false
+		sourceProviderType: double
+		lineageTag: c34a9a40-ce7f-4b6c-afbc-e91e0a764c03
+		summarizeBy: sum
+		sourceColumn: sum_viewers
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column count_observations
+		dataType: double
+		isNullable: false
+		sourceProviderType: decimal(20, 0)
+		lineageTag: b2ea567f-9a56-4d77-b87b-5d852d778b7f
+		summarizeBy: sum
+		sourceColumn: count_observations
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column inserted_at
+		dataType: dateTime
+		isNullable: false
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: 1674740c-2156-497e-a56d-1ab1ac78c6c5
+		summarizeBy: none
+		sourceColumn: inserted_at
+
+		variation Variation
+			isDefault
+			relationship: cd4369c5-7b07-4d46-85da-d96523ec217a
+			defaultHierarchy: LocalDateTable_058d749e-0319-4049-ae22-43e664c61efe.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column datetime = DATE(RELATED('dim_date'[date_day]), RELATED('dim_date'[date_month]), RELATED('dim_date'[date_year])) + TIME('fact_stream_hourly'[time_hour], 0, 0)
+		formatString: General Date
+		lineageTag: 4ff56ccf-8239-45ac-a509-e0359e58ad9d
+		summarizeBy: none
+
+		variation Variation
+			isDefault
+			relationship: b48d6806-70b0-4da1-8595-34cc02a3149c
+			defaultHierarchy: LocalDateTable_3b872e8f-1e7f-447f-857d-263c1a82e1bf.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_stream_hourly = m
+		mode: import
+		source =
+				let
+				    Source = ClickHouse.Database("localhost", 8123, "twitch", []),
+				    twitch_Database = Source{[Name="twitch",Kind="Database"]}[Data],
+				    fact_stream_hourly_Table = twitch_Database{[Name="fact_stream_hourly_final",Kind="Table"]}[Data]
+				in
+				    fact_stream_hourly_Table
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

@@ -1,0 +1,120 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "c8101a5226dbd7ad6425",
+  "position": {
+    "x": 38,
+    "y": 486,
+    "z": 10000,
+    "height": 280,
+    "width": 1176,
+    "tabOrder": 10000
+  },
+  "visual": {
+    "visualType": "scatterChart",
+    "query": {
+      "queryState": {
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_game"
+                    }
+                  },
+                  "Property": "game_name"
+                }
+              },
+              "queryRef": "dim_game.game_name",
+              "nativeQueryRef": "Game",
+              "displayName": "Game"
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_stream_hourly"
+                    }
+                  },
+                  "Property": "avg_viewers"
+                }
+              },
+              "queryRef": "fact_stream_hourly.avg_viewers",
+              "nativeQueryRef": "Average n. of viewers",
+              "active": true,
+              "displayName": "Average n. of viewers"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "dim_game"
+                        }
+                      },
+                      "Property": "total_rating"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(dim_game.total_rating)",
+              "nativeQueryRef": "Average game rating",
+              "displayName": "Average game rating"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "legend": [
+        {
+          "properties": {
+            "showGradientLegend": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Correlation between game viewers and rating'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

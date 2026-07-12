@@ -1,0 +1,66 @@
+relationship 1756509c-8109-3801-d987-bff5dba0591d
+	fromColumn: fact_stream_hourly.streamer_id
+	toColumn: dim_streamer.streamer_id
+
+relationship 1b22bda7-0a0e-d139-55a4-bde4e6cabbe4
+	fromColumn: fact_stream_hourly.game_id
+	toColumn: dim_game.game_id
+
+relationship 43a57e0a-4684-9b67-c698-6e88edb2655a
+	fromColumn: fact_stream_hourly.language_id
+	toColumn: dim_language.language_id
+
+relationship 3d8e1dfe-5509-3c3e-de6a-fd43cb8b749c
+	fromColumn: fact_stream_hourly.date_id
+	toColumn: dim_date.date_id
+
+relationship 984b632d-3b95-4e07-a2d2-5906279c4f5b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dim_game.first_release_date
+	toColumn: LocalDateTable_08a81c54-1133-4d28-afe6-4a050417ec9e.Date
+
+relationship 446c6328-7d06-48b4-b9ab-574ce550bbeb
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dim_game.inserted_at
+	toColumn: LocalDateTable_f23d5e88-5f1d-4c02-8c24-cdab2761491d.Date
+
+relationship 0a7aa843-2d02-4871-98e6-3c2a14a692c4
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dim_language.inserted_at
+	toColumn: LocalDateTable_4d27c351-4159-4efc-a37c-143741566729.Date
+
+relationship 1605c8f1-4445-436a-9ab6-015bd8067428
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dim_date.inserted_at
+	toColumn: LocalDateTable_eb0a013f-3689-4933-87d7-698c691a194e.Date
+
+relationship dc688be7-7ea4-485b-82c6-2dfae3b5e832
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dim_streamer.inserted_at
+	toColumn: LocalDateTable_087fa149-d090-4ef3-8e30-2726993db03f.Date
+
+relationship cd4369c5-7b07-4d46-85da-d96523ec217a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_stream_hourly.inserted_at
+	toColumn: LocalDateTable_058d749e-0319-4049-ae22-43e664c61efe.Date
+
+relationship b48d6806-70b0-4da1-8595-34cc02a3149c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_stream_hourly.datetime
+	toColumn: LocalDateTable_3b872e8f-1e7f-447f-857d-263c1a82e1bf.Date
+
+relationship AutoDetected_f4488839-08e0-4323-be0e-d2b5140799ad
+	crossFilteringBehavior: bothDirections
+	fromColumn: game_themes.game_id
+	toColumn: dim_game.game_id
+
+relationship AutoDetected_76abb7e0-d222-46c8-a5a3-8ab8d8432f51
+	crossFilteringBehavior: bothDirections
+	fromColumn: game_keywords.game_id
+	toColumn: dim_game.game_id
+
+relationship AutoDetected_923e8f54-b130-44fa-bc47-da0f319cf5b6
+	crossFilteringBehavior: bothDirections
+	fromColumn: game_platforms.game_id
+	toColumn: dim_game.game_id
+

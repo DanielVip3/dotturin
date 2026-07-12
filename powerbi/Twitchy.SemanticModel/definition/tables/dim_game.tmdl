@@ -1,0 +1,141 @@
+table dim_game
+	lineageTag: ca508df2-81d7-4440-b90b-8c6b1522c9fa
+
+	column game_id
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 08435d2e-53e9-4bd4-a44b-efad8185685b
+		summarizeBy: none
+		sourceColumn: game_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column game_name
+		dataType: string
+		isNullable: false
+		sourceProviderType: nvarchar(16777215)
+		lineageTag: 6c35c6b8-b4a7-48bf-9657-313274afaae9
+		summarizeBy: none
+		sourceColumn: game_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column igdb_id
+		dataType: string
+		sourceProviderType: nvarchar(16777215)
+		lineageTag: 7d863d7a-addd-4db5-8ebc-50ec67a4c9a9
+		summarizeBy: none
+		sourceColumn: igdb_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column total_rating
+		dataType: double
+		sourceProviderType: double
+		lineageTag: 9d7a60a5-d68f-4db3-99cd-c3371ef95d8c
+		summarizeBy: sum
+		sourceColumn: total_rating
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column total_rating_count
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 00be0b58-258d-468e-a90e-a62eaa1a0cba
+		summarizeBy: sum
+		sourceColumn: total_rating_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_release_date
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: 7b656e20-4fb5-4847-bc6a-7213d96d9418
+		summarizeBy: none
+		sourceColumn: first_release_date
+
+		variation Variation
+			isDefault
+			relationship: 984b632d-3b95-4e07-a2d2-5906279c4f5b
+			defaultHierarchy: LocalDateTable_08a81c54-1133-4d28-afe6-4a050417ec9e.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column themes
+		dataType: string
+		isNullable: false
+		sourceProviderType: nvarchar(16777215)
+		lineageTag: 640f035a-c4e2-4af1-a14e-71661329866d
+		summarizeBy: none
+		sourceColumn: themes
+
+		annotation SummarizationSetBy = Automatic
+
+	column keywords
+		dataType: string
+		isNullable: false
+		sourceProviderType: nvarchar(16777215)
+		lineageTag: 554dece8-a59a-4239-a429-9c83b637ca2d
+		summarizeBy: none
+		sourceColumn: keywords
+
+		annotation SummarizationSetBy = Automatic
+
+	column platforms
+		dataType: string
+		isNullable: false
+		sourceProviderType: nvarchar(16777215)
+		lineageTag: 75c13afc-600b-46d4-9bf1-4ad017ec6833
+		summarizeBy: none
+		sourceColumn: platforms
+
+		annotation SummarizationSetBy = Automatic
+
+	column inserted_at
+		dataType: dateTime
+		isNullable: false
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: 573042c5-30f4-481f-9b18-713bccdf18c1
+		summarizeBy: none
+		sourceColumn: inserted_at
+
+		variation Variation
+			isDefault
+			relationship: 446c6328-7d06-48b4-b9ab-574ce550bbeb
+			defaultHierarchy: LocalDateTable_f23d5e88-5f1d-4c02-8c24-cdab2761491d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_game = m
+		mode: import
+		source =
+				let
+				    Source = ClickHouse.Database("localhost", 8123, "twitch", []),
+				    twitch_Database = Source{[Name="twitch",Kind="Database"]}[Data],
+				    dim_game_Table = twitch_Database{[Name="dim_game_final",Kind="Table"]}[Data],
+				    #"Trimmed Text" = Table.TransformColumns(dim_game_Table,{{"themes", Text.Trim, type text}}),
+				    #"Cleaned Text" = Table.TransformColumns(#"Trimmed Text",{{"themes", Text.Clean, type text}}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Cleaned Text","'","""",Replacer.ReplaceText,{"themes"}),
+				    #"Parsed JSON" = Table.TransformColumns(#"Replaced Value",{{"themes", Json.Document}}),
+				    #"Trimmed Text1" = Table.TransformColumns(#"Parsed JSON",{{"keywords", Text.Trim, type text}}),
+				    #"Cleaned Text1" = Table.TransformColumns(#"Trimmed Text1",{{"keywords", Text.Clean, type text}}),
+				    #"Replaced Value1" = Table.ReplaceValue(#"Cleaned Text1","'","""",Replacer.ReplaceText,{"keywords"}),
+				    #"Parsed JSON1" = Table.TransformColumns(#"Replaced Value1",{{"keywords", Json.Document}}),
+				    #"Trimmed Text2" = Table.TransformColumns(#"Parsed JSON1",{{"platforms", Text.Trim, type text}}),
+				    #"Cleaned Text2" = Table.TransformColumns(#"Trimmed Text2",{{"platforms", Text.Clean, type text}}),
+				    #"Replaced Value2" = Table.ReplaceValue(#"Cleaned Text2","'","""",Replacer.ReplaceText,{"platforms"}),
+				    #"Parsed JSON2" = Table.TransformColumns(#"Replaced Value2",{{"platforms", Json.Document}})
+				in
+				    #"Parsed JSON2"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

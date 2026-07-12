@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Twitchy"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "1f6a13d3-1082-43ea-a9f8-031b7ce9ecca"
+  }
+}
