@@ -59,7 +59,7 @@ All users, passwords and email can be invented.
 
 `SPARK_APP_CORES` and `SPARK_APP_MEMORY` specify the maximum amount of cores each Spark app can have. Considering that at least 5 apps are always running at the same time (and cores and memory are also necessary for your Docker instance for Airflow, Kafka, MinIO, Clickhouse containers), I suggest to keep those values low when running locally (but you can double them if you have more RAM or CPU than me).
 
-`SPARK_NUM_PARTITIONS` is only read by the Airflow-triggered batch jobs (nightly optimization, gold hourly job). The long-running streaming jobs started by `spark_submit_jobs.sh` don't get it passed in; if shuffle partitions need tuning there, it has to be set inside the job itself (see the WSL2 section below, `transitions.py` already hardcodes `spark.sql.shuffle.partitions=8` for this reason).
+`SPARK_NUM_PARTITIONS` is only read by the Airflow-triggered batch jobs (nightly optimization, gold hourly job). The long-running streaming jobs started by `docker/spark_submit_jobs.sh` don't get it passed in; if shuffle partitions need tuning there, it has to be set inside the job itself (see the WSL2 section below, `transitions.py` already hardcodes `spark.sql.shuffle.partitions=8` for this reason).
 
 ## Cold start (first run)
 
@@ -92,7 +92,7 @@ MinIO has to already be up for Terraform to talk to it, so run:
 
 Apart from the obvious containers which stay running, that include **Spark master**, **Spark worker**, **Kafka**, **MinIO**, **Airflow** (and all its subprocesses), **PostgreSQL** and **ClickHouse**, there are various applications / jobs running on top of Spark or Airflow with different schedules:
 
-- **Spark jobs**: there are are 5 Spark Structured Streaming applications always running. They are started by the init container `spark-stream-init`, which in turn runs the shell script `spark_submit_jobs.sh` to start them safely. 
+- **Spark jobs**: there are are 5 Spark Structured Streaming applications always running. They are started by the init container `spark-stream-init`, which in turn runs the shell script `docker/spark_submit_jobs.sh` to start them safely. 
   - bronze app (that consumes messages on Kafka topics constantly, receiving Twitch API data);
   - silver app for streams table;
   - silver app for tags table;

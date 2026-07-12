@@ -2,7 +2,7 @@ x-airflow-common:
   &airflow-common
   build:
     context: .
-    dockerfile: Dockerfile
+    dockerfile: docker/Dockerfile
     target: airflow
   environment:
     &airflow-common-env
@@ -175,7 +175,7 @@ services:
       "
     volumes:
       - type: bind
-        source: ./create_topic.sh
+        source: ./docker/create_topic.sh
         target: /create_topic.sh
     init: true
     networks:
@@ -184,7 +184,7 @@ services:
   spark-master:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
       target: spark
     container_name: spark-master
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
@@ -205,7 +205,7 @@ services:
   spark-worker:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
       target: spark
     container_name: spark-worker
     depends_on:
@@ -234,7 +234,7 @@ services:
   spark-stream-init:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
       target: spark
     depends_on:
       - spark-master
@@ -245,7 +245,7 @@ services:
       - minio
     volumes:
       - ./scripts:/app/jobs
-      - ./spark_submit_jobs.sh:/app/spark_submit_jobs.sh
+      - ./docker/spark_submit_jobs.sh:/app/spark_submit_jobs.sh
     environment:
       SPARK_APP_CORES: ${SPARK_APP_CORES}
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}

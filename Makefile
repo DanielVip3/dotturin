@@ -54,7 +54,7 @@ optimize-silver:
 
 # Usage: make topic name=my_topic
 topic:
-	docker compose exec kafka bash /create_topic.sh $(name)
+	docker compose exec kafka bash /docker/create_topic.sh $(name)
 
 
 # --- Dashboard (runs locally) ---
