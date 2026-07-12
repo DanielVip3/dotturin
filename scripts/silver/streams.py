@@ -10,7 +10,7 @@ from pyspark.sql.functions import (
 )
 
 # Initialize Spark session
-spark = get_spark_session("TwitchNoNameSilverStreams")
+spark = get_spark_session("TwitchySilverStreams")
 
 # Read data from bronze layer Delta Lake
 bronze_df = spark.readStream.format("delta").load("s3a://twitch-bronze/streams/")

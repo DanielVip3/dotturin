@@ -9,7 +9,7 @@ from pyspark.sql.functions import col, expr, year, month, day, to_timestamp
 from pyspark.sql.avro.functions import from_avro
 
 # Initialize Spark session
-spark = get_spark_session("TwitchNoNameStreamingConsumerBronze", master="spark://spark-master:7077")
+spark = get_spark_session("TwitchyStreamingConsumerBronze", master="spark://spark-master:7077")
 
 # -- STREAMS TOPIC
 # Flow from Kafka to Spark

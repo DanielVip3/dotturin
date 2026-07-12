@@ -2,7 +2,7 @@ from common import get_spark_session
 from pyspark.sql.functions import col, from_unixtime, array_distinct
 
 # Initialize Spark session
-spark = get_spark_session("TwitchNoNameSilverGames")
+spark = get_spark_session("TwitchySilverGames")
 
 # Read data from bronze layer Delta Lake
 bronze_df = spark.readStream.format("delta").load("s3a://twitch-bronze/games/")

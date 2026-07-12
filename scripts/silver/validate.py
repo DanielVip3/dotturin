@@ -3,7 +3,7 @@ from soda.scan import Scan
 
 
 def main():
-  spark = get_spark_session("TwitchNoNameSodaSilverValidation")
+  spark = get_spark_session("TwitchySodaSilverValidation")
 
   streams_df = spark.read.format("delta").load("s3a://twitch-silver/streams/")
   tags_df = spark.read.format("delta").load("s3a://twitch-silver/stream_tags/")

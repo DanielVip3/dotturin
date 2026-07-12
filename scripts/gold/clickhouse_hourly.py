@@ -4,7 +4,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, max, sum, count, expr, concat, lpad
 
 # Initialize Spark session
-spark = get_spark_session("TwitchNoNameGoldHourly")
+spark = get_spark_session("TwitchyGoldHourly")
 spark.conf.set("spark.sql.shuffle.partitions", int(os.environ.get("SPARK_NUM_PARTITIONS")))
 
 CH_HOST = "clickhouse"

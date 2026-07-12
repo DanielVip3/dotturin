@@ -12,7 +12,7 @@ import pandas as pd
 STREAM_TIMEOUT_HOURS = 12  # After 12 hour with no data, the stream is considered offline
 
 # Initialize Spark session
-spark = get_spark_session("TwitchNoNameSilverTransitions")
+spark = get_spark_session("TwitchySilverTransitions")
 spark.conf.set("spark.sql.shuffle.partitions", "8")
 
 # Read data from bronze layer Delta Lake
